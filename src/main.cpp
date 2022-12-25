@@ -7,6 +7,10 @@
 #include <glm/glm.hpp>
 
 #include <iostream>
+#include <vector>
+#include <memory>
+
+#include "Shader.hpp"
 
 int main(int argc, char** argv) {
 
@@ -14,11 +18,10 @@ int main(int argc, char** argv) {
         return -1;
     }
 
-    const char* glsl_version = "#version 330";
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
 
     // Create window with graphics context
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -40,11 +43,42 @@ int main(int argc, char** argv) {
     ImGuiIO& io = ImGui::GetIO();
     ImGui::StyleColorsDark();
     ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
-    ImGui_ImplOpenGL3_Init(glsl_version);
+    ImGui_ImplOpenGL3_Init();
     io.Fonts->AddFontFromFileTTF("assets/fonts/Fantasque Sans Mono Nerd Font.ttf", 14.0f);
+
+    // Shaders
+    auto basic_shader = std::make_unique<Shader>("assets/shaders/basic.vert", "assets/shaders/basic.frag");
 
     bool show_demo_window = true;
     glm::vec4 clear_color = { 0.45f, 0.55f, 0.60f, 1.0f };
+
+    // Objects
+    std::vector<float> vertices = {
+        -0.5f, -0.5f, 0.0f,
+         0.5f, -0.5f, 0.0f,
+         0.5f,  0.5f, 0.0f,
+        -0.5f,  0.5f, 0.0f,
+    };
+
+    std::vector<unsigned int> indices = {
+        0, 1, 2,
+        0, 2, 3,
+    };
+
+    unsigned int vao, vbo, ebo;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<void*>(0));
+
+    glGenBuffers(1, &ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+
 
     bool done = false;
     while (!done) {
@@ -58,6 +92,15 @@ int main(int argc, char** argv) {
                 done = true;
             }
         }
+
+        glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+        glClearColor(clear_color.r, clear_color.b, clear_color.a, clear_color.w);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        basic_shader->Start();
+        glBindVertexArray(vao);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
 
         // Start the Dear ImGui Frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -76,9 +119,6 @@ int main(int argc, char** argv) {
         }
 
         ImGui::Render();
-        glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
-        glClearColor(clear_color.r, clear_color.b, clear_color.a, clear_color.w);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         SDL_GL_SwapWindow(window);
     }
