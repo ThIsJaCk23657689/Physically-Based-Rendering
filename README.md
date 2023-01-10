@@ -1,6 +1,6 @@
 # Physically Based Rendering
 
-OpenGL 4.6
+OpenGL 4.5
 
 ## 安裝
 需要使用 vcpkg 安裝以下套件：

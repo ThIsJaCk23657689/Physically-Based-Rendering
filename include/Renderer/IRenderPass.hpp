@@ -2,13 +2,14 @@
 #define IRENDER_HPP
 
 #include <cstdint>
-#include "App/ContextManager.hpp"
 
-class ContextManager;
+#include "App/Application.hpp"
+
+class Application;
 
 class IRenderPass {
 public:
-    IRenderPass(ContextManager* contextManager) : m_ContextManager(contextManager) {}
+    IRenderPass(Application* app) : m_App(app) {}
 
     virtual void Render() {}
     virtual void Animate(float deltaTime) {}
@@ -17,10 +18,10 @@ public:
 
     // Event functions
 
-    inline ContextManager* GetContextManager() { return m_ContextManager; }
+    inline Application* GetApplication() { return m_App; }
 
 private:
-    ContextManager* m_ContextManager;
+    Application* m_App;
 
 };
 
