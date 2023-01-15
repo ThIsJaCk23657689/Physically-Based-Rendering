@@ -17,6 +17,12 @@ public:
     virtual void BackBufferResized(const uint32_t width, const uint32_t height) {}
 
     // Event functions
+    virtual bool ProcessEvent(const SDL_Event& event) { return false; }
+    virtual bool OnKeyboardEvent(const SDL_KeyboardEvent& event) { return false; }
+    virtual bool OnTextInputEvent(const SDL_TextInputEvent& event) { return false; }
+    virtual bool OnMouseButtonEvent(const SDL_MouseButtonEvent& event) { return false; }
+    virtual bool OnMouseMotionEvent(const SDL_MouseMotionEvent& event) { return false; }
+    virtual bool OnMouseWheelEvent(const SDL_MouseWheelEvent& event) { return false; }
 
     inline Application* GetApplication() { return m_App; }
 

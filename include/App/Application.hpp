@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 
+#include <vector>
 #include <list>
 
 #include "App/AppConfig.hpp"
@@ -33,8 +34,6 @@ public:
     bool IsVsyncEnabled() const { return m_Config.vsyncEnabled; }
     void SetVsyncEnabled(bool enabled) { m_Config.vsyncEnabled = enabled; }
 
-    // Event functions
-
     void Shutdown();
     virtual ~Application() = default;
 
@@ -44,6 +43,7 @@ protected:
     AppConfig m_Config;
     SDL_Window* m_Window = nullptr;
     SDL_GLContext m_GLContext{};
+    std::vector<SDL_Event> m_Events = {};
     std::list<IRenderPass*> m_RenderPasses;
 
     bool m_ShouldClose = false;
@@ -53,8 +53,20 @@ protected:
     double m_FrameTimeSum = 0.0;
     int m_NumberOfAccumulatedFrames = 0;
 
-    void UpdateWindowSize();
+    void HandleEvents();
+    void PollEvents();
+    void ProcessEvents();
 
+    // Event functions
+    void OnWindowCloseEvent();
+    void OnWindowEvent(const SDL_WindowEvent& event);
+    void OnKeyboardEvent(const SDL_KeyboardEvent& event);
+    void OnTextInputEvent(const SDL_TextInputEvent& event);
+    void OnMouseButtonEvent(const SDL_MouseButtonEvent& event);
+    void OnMouseMotionEvent(const SDL_MouseMotionEvent& event);
+    void OnMouseWheelEvent(const SDL_MouseWheelEvent& event);
+
+    void UpdateWindowSize();
     void BackBufferResizing();
     void BackBufferResized();
 

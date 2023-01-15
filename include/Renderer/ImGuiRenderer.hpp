@@ -24,6 +24,14 @@ public:
     void Render() override;
     void BackBufferResizing() override;
 
+    // Event functions
+    bool ProcessEvent(const SDL_Event& event) override;
+    bool OnKeyboardEvent(const SDL_KeyboardEvent& event) override;
+    bool OnTextInputEvent(const SDL_TextInputEvent& event) override;
+    bool OnMouseButtonEvent(const SDL_MouseButtonEvent& event) override;
+    bool OnMouseMotionEvent(const SDL_MouseMotionEvent& event) override;
+    bool OnMouseWheelEvent(const SDL_MouseWheelEvent& event) override;
+
 protected:
     virtual void BuildUI() = 0;
 
@@ -31,6 +39,8 @@ protected:
     void DrawScreenCenteredText(const char* text);
     void EndFullScreenWindow();
 
+    std::array<bool, 3> m_MouseDown = { false };
+    std::array<bool, SDL_NUM_SCANCODES> m_KeyDown = { false };
 };
 
 #endif

@@ -32,14 +32,6 @@ bool ImGuiRenderer::LoadFont(const std::filesystem::path& fontFile, float fontSi
 }
 
 void ImGuiRenderer::Animate(float deltaTime) {
-    int width, height;
-    GetApplication()->GetWindowSize(width, height);
-
-    ImGuiIO& io = ImGui::GetIO();
-    io.DisplaySize = ImVec2(float(width), float(height));
-    io.DeltaTime = deltaTime;
-    io.MouseDrawCursor = false;
-
     // Start the Dear ImGui Frame
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame();
@@ -79,4 +71,33 @@ void ImGuiRenderer::DrawScreenCenteredText(const char* text) {
 void ImGuiRenderer::EndFullScreenWindow() {
     ImGui::End();
     ImGui::PopStyleVar();
+}
+
+bool ImGuiRenderer::ProcessEvent(const SDL_Event& event) {
+    ImGui_ImplSDL2_ProcessEvent(&event);
+}
+
+bool ImGuiRenderer::OnKeyboardEvent(const SDL_KeyboardEvent& event) {
+    auto& io = ImGui::GetIO();
+    return io.WantCaptureKeyboard;
+}
+
+bool ImGuiRenderer::OnTextInputEvent(const SDL_TextInputEvent& event) {
+    auto& io = ImGui::GetIO();
+    return io.WantCaptureKeyboard;
+}
+
+bool ImGuiRenderer::OnMouseButtonEvent(const SDL_MouseButtonEvent& event) {
+    auto& io = ImGui::GetIO();
+    return io.WantCaptureMouse;
+}
+
+bool ImGuiRenderer::OnMouseMotionEvent(const SDL_MouseMotionEvent& event) {
+    auto& io = ImGui::GetIO();
+    return io.WantCaptureMouse;
+}
+
+bool ImGuiRenderer::OnMouseWheelEvent(const SDL_MouseWheelEvent& event) {
+    auto& io = ImGui::GetIO();
+    return io.WantCaptureMouse;
 }

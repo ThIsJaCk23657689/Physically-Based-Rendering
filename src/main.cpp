@@ -1,5 +1,3 @@
-#include <glm/glm.hpp>
-
 #include <vector>
 #include <memory>
 

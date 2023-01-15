@@ -86,6 +86,7 @@ bool Application::CreateContextAndWindow(const AppConfig& config) {
     // Create GL Context
     m_GLContext = SDL_GL_CreateContext(m_Window);
     SDL_GL_MakeCurrent(m_Window, m_GLContext);
+    Log::Info("Create OpenGL context successfully.");
 
     // Initialize glad
     if (!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
@@ -93,6 +94,12 @@ bool Application::CreateContextAndWindow(const AppConfig& config) {
         return false;
     }
     Log::Info("Initialize glad successfully.");
+
+    // Output OpenGL Info
+    Log::Info("OpenGL Version:\t%s", glGetString(GL_VERSION));
+    Log::Info("GLSL Version:\t%s", glGetString(GL_SHADING_LANGUAGE_VERSION));
+    Log::Info("GPU Renderer:\t%s", glGetString(GL_RENDERER));
+    Log::Info("GPU Vendor:\t%s", glGetString(GL_VENDOR));
 
     // Enable vsync
     SDL_GL_SetSwapInterval(m_Config.vsyncEnabled);
@@ -170,19 +177,8 @@ void Application::RunMainLoop() {
     m_PreviousFrameTime = static_cast<float>(SDL_GetTicks()) / 1000.0f;
 
     while (!m_ShouldClose) {
-
         // Handle events
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            // ImGui_ImplSDL2_ProcessEvent(&event);
-            if (event.type == SDL_QUIT) {
-                m_ShouldClose = true;
-            }
-            if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE &&
-                event.window.windowID == SDL_GetWindowID(m_Window)) {
-                m_ShouldClose = true;
-            }
-        }
+        HandleEvents();
 
         UpdateWindowSize();
         double currentTime = static_cast<float>(SDL_GetTicks()) / 1000.0f;
@@ -206,6 +202,127 @@ void Application::GetWindowSize(int& width, int& height) const {
 
 const AppConfig& Application::GetAppConfig() {
     return m_Config;
+}
+
+void Application::HandleEvents() {
+    PollEvents();
+    ProcessEvents();
+}
+
+void Application::PollEvents() {
+    m_Events.clear();
+
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        m_Events.push_back(event);
+    }
+}
+
+void Application::ProcessEvents() {
+    for (auto& event : m_Events) {
+
+        for (auto it = m_RenderPasses.crbegin(); it != m_RenderPasses.crend(); ++it) {
+            (*it)->ProcessEvent(event);
+        }
+
+        switch (event.type) {
+            case SDL_QUIT:
+                OnWindowCloseEvent();
+                break;
+            case SDL_WINDOWEVENT:
+                OnWindowEvent(event.window);
+                break;
+            case SDL_KEYDOWN:
+            case SDL_KEYUP:
+                OnKeyboardEvent(event.key);
+                break;
+            case SDL_TEXTINPUT:
+                OnTextInputEvent(event.text);
+                break;
+            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONUP:
+                OnMouseButtonEvent(event.button);
+                break;
+            case SDL_MOUSEMOTION:
+                OnMouseMotionEvent(event.motion);
+                break;
+            case SDL_MOUSEWHEEL:
+                OnMouseWheelEvent(event.wheel);
+                break;
+        }
+    }
+}
+
+void Application::OnWindowCloseEvent() {
+    m_ShouldClose = true;
+}
+
+void Application::OnWindowEvent(const SDL_WindowEvent& event) {
+    if (event.event == SDL_WINDOWEVENT_RESIZED) {
+        UpdateWindowSize();
+    }
+    if (event.event == SDL_WINDOWEVENT_CLOSE && event.windowID == SDL_GetWindowID(m_Window)) {
+        m_ShouldClose = true;
+    }
+}
+
+void Application::OnKeyboardEvent(const SDL_KeyboardEvent& event) {
+    if (event.keysym.sym == SDLK_UNKNOWN) {
+        return;
+    }
+
+    // Press ESC key to exit the program (This event's priority is the first one.)
+    if (event.keysym.sym == SDLK_ESCAPE) {
+        m_ShouldClose = true;
+    }
+
+    for (auto it = m_RenderPasses.crbegin(); it != m_RenderPasses.crend(); ++it) {
+        bool result = (*it)->OnKeyboardEvent(event);
+
+        if (result) {
+            break;
+        }
+    }
+}
+
+void Application::OnTextInputEvent(const SDL_TextInputEvent& event) {
+    for (auto it = m_RenderPasses.crbegin(); it != m_RenderPasses.crend(); ++it) {
+        bool result = (*it)->OnTextInputEvent(event);
+
+        if (result) {
+            break;
+        }
+    }
+}
+
+void Application::OnMouseButtonEvent(const SDL_MouseButtonEvent& event) {
+    for (auto it = m_RenderPasses.crbegin(); it != m_RenderPasses.crend(); ++it) {
+        bool result = (*it)->OnMouseButtonEvent(event);
+
+        if (result) {
+            break;
+        }
+    }
+}
+
+void Application::OnMouseMotionEvent(const SDL_MouseMotionEvent& event) {
+    for (auto it = m_RenderPasses.crbegin(); it != m_RenderPasses.crend(); ++it) {
+        bool result = (*it)->OnMouseMotionEvent(event);
+
+        if (result) {
+            break;
+        }
+    }
+}
+
+void Application::OnMouseWheelEvent(const SDL_MouseWheelEvent& event) {
+    for (auto it = m_RenderPasses.crbegin(); it != m_RenderPasses.crend(); ++it) {
+        bool result = (*it)->OnMouseWheelEvent(event);
+
+        if (result) {
+            break;
+        }
+    }
 }
 
 void Application::UpdateWindowSize() {
