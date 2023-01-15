@@ -38,9 +38,6 @@ protected:
     void BeginFullScreenWindow();
     void DrawScreenCenteredText(const char* text);
     void EndFullScreenWindow();
-
-    std::array<bool, 3> m_MouseDown = { false };
-    std::array<bool, SDL_NUM_SCANCODES> m_KeyDown = { false };
 };
 
 #endif

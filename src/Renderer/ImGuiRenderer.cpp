@@ -26,7 +26,7 @@ bool ImGuiRenderer::Init() {
 }
 
 bool ImGuiRenderer::LoadFont(const std::filesystem::path& fontFile, float fontSize) {
-    ImGuiIO& io = ImGui::GetIO();
+    auto& io = ImGui::GetIO();
     ImFont* font = io.Fonts->AddFontFromFileTTF(fontFile.string().c_str(), fontSize);
     return (font != nullptr);
 }
