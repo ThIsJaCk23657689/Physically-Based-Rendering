@@ -19,7 +19,7 @@ private:
 
     // Temp
     std::shared_ptr<Shader> m_Shader = nullptr;
-    unsigned int m_VAO, m_VBO, m_EBO;
+    unsigned int m_VAO, m_VBO, m_EBO, m_Texture, m_Sampler;
     std::vector<float> m_Vertices;
     std::vector<unsigned int> m_Indices;
 

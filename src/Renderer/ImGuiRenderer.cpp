@@ -74,7 +74,7 @@ void ImGuiRenderer::EndFullScreenWindow() {
 }
 
 bool ImGuiRenderer::ProcessEvent(const SDL_Event& event) {
-    ImGui_ImplSDL2_ProcessEvent(&event);
+    return ImGui_ImplSDL2_ProcessEvent(&event);
 }
 
 bool ImGuiRenderer::OnKeyboardEvent(const SDL_KeyboardEvent& event) {
