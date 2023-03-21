@@ -7,6 +7,7 @@
 #include <list>
 
 #include "App/AppConfig.hpp"
+#include "Core/Graphics.hpp"
 #include "Renderer/IRenderPass.hpp"
 
 class IRenderPass;
@@ -27,6 +28,7 @@ public:
     void GetWindowSize(int& width, int& height) const;
 
     SDL_GLContext GetContext() { return m_GLContext; }
+    IGraphics* GetGraphics() { return m_Graphics; }
 
     const AppConfig& GetAppConfig();
     double GetAverageFrameTimeSeconds() const { return m_AverageFrameTime; }
@@ -43,6 +45,7 @@ protected:
     AppConfig m_Config;
     SDL_Window* m_Window = nullptr;
     SDL_GLContext m_GLContext{};
+    GraphicsHandle m_Graphics;
     std::vector<SDL_Event> m_Events = {};
     std::list<IRenderPass*> m_RenderPasses;
 

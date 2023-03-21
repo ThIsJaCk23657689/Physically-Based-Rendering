@@ -1,9 +1,8 @@
-#ifndef TEXTURE_HPP
-#define TEXTURE_HPP
+#ifndef ITEXTURE_HPP
+#define ITEXTURE_HPP
 
-#include <cstdint>
-#include <memory>
 #include "Core/IResource.hpp"
+#include "Core/MemoryManager/RefCountPtr.hpp"
 
 enum class TextureDimension {
     Unknown,
@@ -34,8 +33,9 @@ struct TextureDesc {
 
 struct ITexture : public IResource {
     virtual const TextureDesc& GetDesc() const = 0;
+    virtual const unsigned int GetID() const = 0;
 };
 
-typedef std::shared_ptr<ITexture> TextureHandle;
+typedef RefCountPtr<ITexture> TextureHandle;
 
 #endif

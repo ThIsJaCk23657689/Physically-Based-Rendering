@@ -4,6 +4,7 @@
 #include <memory>
 #include <thread>
 #include "App/Application.hpp"
+#include "Core/Texture/TextureCache.hpp"
 #include "IRenderPass.hpp"
 
 class SceneRenderer : public IRenderPass {
@@ -28,6 +29,7 @@ public:
 protected:
     typedef IRenderPass Super;
 
+    std::shared_ptr<TextureCache> m_TextureCache;
     std::unique_ptr<std::thread> m_SceneLoadingThread;
     bool m_IsAsyncLoad;
 

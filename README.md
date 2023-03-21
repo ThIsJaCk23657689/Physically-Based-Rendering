@@ -12,5 +12,19 @@ OpenGL 4.5
 
 > 圖學環境安裝教學請[看這](https://hackmd.io/@23657689/computer_graphics_env_settings) 。
 
+## TODO
+* Camera
+* Light
+* Fog
+* Model
+* Rendering Pipeline
+* HDR
+* Gamma Correction
+* Bloom Effect
+* SSAO
+* Deferred Shading
+* Physically Based Rendering
+* Shadow
+
 ---
 Author: ThIsJaCk

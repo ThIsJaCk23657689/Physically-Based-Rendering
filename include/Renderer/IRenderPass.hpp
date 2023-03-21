@@ -4,6 +4,7 @@
 #include <cstdint>
 
 #include "App/Application.hpp"
+#include "Core/Graphics.hpp"
 
 class Application;
 

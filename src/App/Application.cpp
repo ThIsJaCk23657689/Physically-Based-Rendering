@@ -95,6 +95,9 @@ bool Application::CreateContextAndWindow(const AppConfig& config) {
     }
     Log::Info("Initialize glad successfully.");
 
+    // Create Graphics
+    m_Graphics = GraphicsHandle::Create(new Graphics());
+
     // Output OpenGL Info
     Log::Info("OpenGL Version:\t%s", glGetString(GL_VERSION));
     Log::Info("GLSL Version:\t%s", glGetString(GL_SHADING_LANGUAGE_VERSION));
