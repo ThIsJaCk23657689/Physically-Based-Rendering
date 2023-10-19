@@ -2,8 +2,8 @@
 #define IVERTEXARRAY_H
 
 #include <map>
-#include "Core/IResource.hpp"
 #include "Core/Buffer/IBuffer.hpp"
+#include "Core/IResource.hpp"
 
 struct VertexArrayDesc {
     std::map<unsigned int, BufferHandle> vertexBuffers;

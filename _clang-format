@@ -28,13 +28,13 @@ NamespaceIndentation: All
 SpaceAfterTemplateKeyword: false
 SpaceBeforeCpp11BracedList: true
 #DeriveLineEnding: false
-#UseCRLF: false
+UseCRLF: false
 
 BreakBeforeBraces: Attach
 BreakConstructorInitializers: AfterColon
 
 SpacesInParentheses: false
-SpacesInAngles:  Never
+SpacesInAngles: Never
 SpaceInEmptyParentheses: false
 SpacesInCStyleCastParentheses: false
 SpaceBeforeAssignmentOperators: true

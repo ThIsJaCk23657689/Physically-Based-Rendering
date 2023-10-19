@@ -19,6 +19,4 @@ public:
     unsigned int id;
 
 };
-
-
 #endif

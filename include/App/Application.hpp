@@ -3,8 +3,8 @@
 
 #include <SDL.h>
 
-#include <vector>
 #include <list>
+#include <vector>
 
 #include "App/AppConfig.hpp"
 #include "Core/Graphics.hpp"
@@ -42,7 +42,7 @@ protected:
 
     AppConfig m_Config;
     SDL_Window* m_Window = nullptr;
-    SDL_GLContext m_GLContext{};
+    SDL_GLContext m_GLContext {};
     GraphicsHandle m_Graphics;
     std::vector<SDL_Event> m_Events = {};
     std::list<IRenderPass*> m_RenderPasses;

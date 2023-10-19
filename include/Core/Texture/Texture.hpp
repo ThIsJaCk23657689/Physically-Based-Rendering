@@ -2,8 +2,8 @@
 #define TEXTURE_HPP
 
 #include "Core/Graphics.hpp"
-#include "Core/Texture/ITexture.hpp"
 #include "Core/MemoryManager/RefCounter.hpp"
+#include "Core/Texture/ITexture.hpp"
 
 class Graphics;
 

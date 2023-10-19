@@ -20,7 +20,6 @@ public:
 private:
     void* m_data;
     std::size_t m_size;
-
 };
 
 #endif

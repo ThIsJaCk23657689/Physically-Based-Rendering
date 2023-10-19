@@ -1,9 +1,8 @@
 #include "Core/Texture/TextureCache.hpp"
-#include "Utility/Log.hpp"
 #include "Utility/ImageLoader.hpp"
+#include "Utility/Log.hpp"
 
-TextureCache::TextureCache(GraphicsHandle graphics) : m_Graphics(graphics) {
-}
+TextureCache::TextureCache(GraphicsHandle graphics) : m_Graphics(graphics) {}
 
 TextureCache::~TextureCache() {
     Reset();
@@ -86,6 +85,8 @@ void TextureCache::ProcessRenderingThreadCommands(float timeLimitMilliseconds) {
         }
     }
 }
+
+void TextureCache::LoadingFinished() {}
 
 bool TextureCache::FindTextureInCache(const std::filesystem::path& path, std::shared_ptr<TextureData>& texture) {
     std::lock_guard<std::mutex> guard(m_LoadedTexturesMutex);

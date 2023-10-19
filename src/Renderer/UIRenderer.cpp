@@ -25,7 +25,9 @@ void UIRenderer::BuildUI() {
     {
         ImGui::Begin("Hello World!");
         ImGui::Checkbox("Demo Window", &m_UI.showDemoWindow);
-        ImGui::Text("SceneRenderer average %.3f ms/frame (%.1 FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::Text("SceneRenderer average %.3f ms/frame (%.1 FPS)",
+                    1000.0f / ImGui::GetIO().Framerate,
+                    ImGui::GetIO().Framerate);
         ImGui::End();
     }
 }

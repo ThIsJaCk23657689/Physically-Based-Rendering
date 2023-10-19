@@ -7,6 +7,7 @@
 
 #include "Core/Graphics.hpp"
 #include "Scene/IMeshSet.hpp"
+#include "Scene/Vertex.hpp"
 
 enum ModelBasicType : unsigned int {
     Cube = 0,
@@ -49,10 +50,9 @@ protected:
 
     uint8_t m_AttributeMask;
     std::vector<uint32_t>       m_Indices;
-    std::vector<float>          m_Vertices;
+    std::vector<Vertex>         m_Vertices;
 
 private:
-
 };
 
 #endif

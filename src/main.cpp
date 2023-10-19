@@ -1,11 +1,11 @@
 #include <vector>
 #include <memory>
 
-#include "UIData.hpp"
 #include "App/AppConfig.hpp"
 #include "App/Application.hpp"
 #include "Renderer/MainRenderer.hpp"
 #include "Renderer/UIRenderer.hpp"
+#include "UIData.hpp"
 
 int main(int argc, char** argv) {
 

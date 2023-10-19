@@ -7,11 +7,9 @@
 #include "Core/Texture/Texture.hpp"
 #include "Utility/Log.hpp"
 
-Graphics::Graphics() {
-}
+Graphics::Graphics() {}
 
-Graphics::~Graphics() noexcept {
-}
+Graphics::~Graphics() noexcept {}
 
 void Graphics::Open() {
     // clear state ?
@@ -30,42 +28,29 @@ void Graphics::ClearCache(const glm::vec4& color) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Graphics::Draw(unsigned int vao, unsigned int texture, const size_t& vertexCount) {
-    glBindVertexArray(vao);
-    glBindTextureUnit(0, texture);
-    // glActiveTexture(GL_TEXTURE0);
-    // glBindTexture(GL_TEXTURE_2D, m_Texture);
+void Graphics::Draw(IVertexArray* vao, ITexture* texture, const size_t& vertexCount) {
+    glBindVertexArray(vao->GetID());
+    glBindTextureUnit(0, texture->GetID());
+
+    //    glActiveTexture(GL_TEXTURE0);
+    //    glBindTexture(GL_TEXTURE_2D, texture->GetID());
+
     glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertexCount));
 }
 
-void Graphics::DrawIndexed(unsigned int vao, unsigned int texture, const size_t& indexCount) {
-    glBindVertexArray(vao);
-    glBindTextureUnit(0, texture);
+void Graphics::DrawIndexed(IVertexArray* vao, ITexture* texture, const size_t& indexCount) {
+    glBindVertexArray(vao->GetID());
+    glBindTextureUnit(0, texture->GetID());
+
     // glActiveTexture(GL_TEXTURE0);
     // glBindTexture(GL_TEXTURE_2D, m_Texture);
+
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indexCount), GL_UNSIGNED_INT, nullptr);
 }
 
 VertexArrayHandle Graphics::CreateVertexArray(const VertexArrayDesc& desc) {
     unsigned int newVAO = 0;
     glCreateVertexArrays(1, &newVAO);
-
-    const auto& vbos = desc.vertexBuffers;
-    for (const auto& it : vbos) {
-        unsigned int bindingIndex = it.first;
-        const auto& vbo = it.second;
-        const auto& vboDesc = vbo->GetDesc();
-
-        auto offset = vboDesc.dataOffset;
-        auto stride = vboDesc.structStride;
-        glVertexArrayVertexBuffer(newVAO, bindingIndex, vbo->GetID(), offset, stride);
-    }
-
-    const auto& ebo = desc.elementBuffer;
-    if ( ebo )
-    {
-        glVertexArrayElementBuffer(newVAO, ebo->GetID());
-    }
 
     auto* vertexArray = new VertexArray(this);
     vertexArray->desc = desc;
@@ -89,7 +74,7 @@ void Graphics::WriteBuffer(IBuffer* b, const void* data, size_t dataSize) {
     int bufferFlag = GL_MAP_WRITE_BIT;
     switch (desc.cpuAccess) {
         case CpuAccessMode::Read:
-            bufferFlag = GL_MAP_READ_BIT ;
+            bufferFlag = GL_MAP_READ_BIT;
         case CpuAccessMode::Write:
             bufferFlag = GL_MAP_WRITE_BIT;
             break;
@@ -99,10 +84,34 @@ void Graphics::WriteBuffer(IBuffer* b, const void* data, size_t dataSize) {
             break;
     }
 
-    glNamedBufferStorage(b->GetID(), static_cast< GLsizeiptr >( dataSize ), data, bufferFlag);
+    glNamedBufferStorage(b->GetID(), static_cast<GLsizeiptr>(dataSize), data, bufferFlag);
 }
 
-void Graphics::BindAttributePtr(IVertexArray* vao, uint32_t attributeIndex, uint32_t bindingIndex, int32_t attributeStride, uint32_t relativeOffset) {
+void Graphics::BindVertexBuffer(IVertexArray* vao, const uint32_t& bindingIndex, IBuffer* vbo) {
+    if (!vbo) {
+        assert(0);
+    }
+
+    const auto& vboDesc = vbo->GetDesc();
+    auto offset = vboDesc.dataOffset;
+    auto stride = vboDesc.structStride;
+
+    glVertexArrayVertexBuffer(vao->GetID(), bindingIndex, vbo->GetID(), offset, stride);
+}
+
+void Graphics::BindIndexBuffer(IVertexArray* vao, IBuffer* ebo) {
+    if (!ebo) {
+        assert(0);
+    }
+
+    glVertexArrayElementBuffer(vao->GetID(), ebo->GetID());
+}
+
+void Graphics::BindAttributePtr(IVertexArray* vao,
+                                uint32_t attributeIndex,
+                                uint32_t bindingIndex,
+                                int32_t attributeStride,
+                                uint32_t relativeOffset) {
     const auto& desc = vao->GetDesc();
 
     glVertexArrayAttribFormat(vao->GetID(), attributeIndex, attributeStride, GL_FLOAT, GL_FALSE, relativeOffset);
@@ -111,7 +120,6 @@ void Graphics::BindAttributePtr(IVertexArray* vao, uint32_t attributeIndex, uint
 }
 
 TextureHandle Graphics::CreateTexture(const TextureDesc& desc, const void* data) {
-    
     switch (desc.dimension) {
         case TextureDimension::Texture1D:
         case TextureDimension::Texture1DArray:
@@ -136,14 +144,14 @@ TextureHandle Graphics::CreateTexture(const TextureDesc& desc, const void* data)
 
     // OpenGL 3.3
     {
-//        glGenTextures(1, &m_Texture);
-//        glBindTexture(GL_TEXTURE_2D, m_Texture);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-//        glGenerateMipmap(GL_TEXTURE_2D);
+        //        glGenTextures(1, &m_Texture);
+        //        glBindTexture(GL_TEXTURE_2D, m_Texture);
+        //        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        //        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        //        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        //        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        //        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        //        glGenerateMipmap(GL_TEXTURE_2D);
     }
 
     // OpenGL 4.5
@@ -163,12 +171,12 @@ TextureHandle Graphics::CreateTexture(const TextureDesc& desc, const void* data)
 
         glGenerateMipmap(textureID);
 
-//        glCreateSamplers(1, &m_Sampler);
-//        glSamplerParameteri(m_Sampler, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-//        glSamplerParameteri(m_Sampler, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-//        glSamplerParameteri(m_Sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-//        glSamplerParameteri(m_Sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//        glBindSampler(0, m_Sampler);
+        //        glCreateSamplers(1, &m_Sampler);
+        //        glSamplerParameteri(m_Sampler, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+        //        glSamplerParameteri(m_Sampler, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+        //        glSamplerParameteri(m_Sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        //        glSamplerParameteri(m_Sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        //        glBindSampler(0, m_Sampler);
     }
     auto* texture = new Texture(this);
     texture->desc = desc;

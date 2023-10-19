@@ -1,8 +1,8 @@
 #ifndef BUFFER_HPP
 #define BUFFER_HPP
 
-#include "Core/Graphics.hpp"
 #include "Core/Buffer/IBuffer.hpp"
+#include "Core/Graphics.hpp"
 #include "Core/MemoryManager/RefCounter.hpp"
 
 class Graphics;
@@ -17,7 +17,6 @@ public:
     Graphics* parent;
     BufferDesc desc;
     unsigned int id;
-
 };
 
 #endif

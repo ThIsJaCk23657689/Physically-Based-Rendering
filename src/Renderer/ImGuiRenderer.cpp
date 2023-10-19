@@ -3,8 +3,7 @@
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_sdl2.h>
 
-ImGuiRenderer::ImGuiRenderer(Application* app)
-    : IRenderPass(app) {
+ImGuiRenderer::ImGuiRenderer(Application* app) : IRenderPass(app) {
     // ui create
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -31,7 +30,7 @@ bool ImGuiRenderer::LoadFont(const std::filesystem::path& fontFile, float fontSi
     return (font != nullptr);
 }
 
-void ImGuiRenderer::Animate(float deltaTime) {
+void ImGuiRenderer::Animate(const float& deltaTime) {
     // Start the Dear ImGui Frame
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame();
@@ -45,9 +44,7 @@ void ImGuiRenderer::Render() {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void ImGuiRenderer::BackBufferResizing() {
-
-}
+void ImGuiRenderer::BackBufferResizing() {}
 
 void ImGuiRenderer::BeginFullScreenWindow() {
     int width, height;

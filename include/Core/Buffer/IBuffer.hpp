@@ -14,11 +14,7 @@ struct BufferType {
 };
 
 struct CpuAccessMode {
-    enum Enum {
-        None,
-        Read,
-        Write
-    };
+    enum Enum { None, Read, Write };
 };
 
 struct BufferDesc {

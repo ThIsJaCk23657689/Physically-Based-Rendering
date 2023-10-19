@@ -2,8 +2,8 @@
 
 #include <glad/glad.h>
 
-#include <mutex>
 #include <cassert>
+#include <mutex>
 
 #include "Utility/Log.hpp"
 
@@ -135,9 +135,7 @@ void Application::AddRenderPassToBack(IRenderPass* pRenderPass) {
     pRenderPass->BackBufferResized(m_Config.width, m_Config.height);
 }
 
-void Application::RemoveRenderPass(IRenderPass* pRenderPass) {
-
-}
+void Application::RemoveRenderPass(IRenderPass* pRenderPass) {}
 
 void Application::BackBufferResizing() {
     for (auto it : m_RenderPasses) {
@@ -365,9 +363,7 @@ void Application::Shutdown() {
     }
 }
 
-void Application::BeginFrame() {
-
-}
+void Application::BeginFrame() {}
 
 void Application::Present() {
     SDL_GL_SwapWindow(m_Window);

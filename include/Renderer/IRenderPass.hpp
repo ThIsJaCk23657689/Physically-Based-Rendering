@@ -13,7 +13,7 @@ public:
     IRenderPass(Application* app) : m_App(app) {}
 
     virtual void Render() {}
-    virtual void Animate(float deltaTime) {}
+    virtual void Animate(const float& deltaTime) {}
     virtual void BackBufferResizing() {}
     virtual void BackBufferResized(const uint32_t width, const uint32_t height) {}
 
@@ -29,7 +29,6 @@ public:
 
 private:
     Application* m_App;
-
 };
 
 #endif

@@ -20,8 +20,8 @@ public:
     bool Init();
     bool LoadFont(const std::filesystem::path& fontFile, float fontSize);
 
-    void Animate(float deltaTime) override;
     void Render() override;
+    void Animate(const float& deltaTime) override;
     void BackBufferResizing() override;
 
     // Event functions

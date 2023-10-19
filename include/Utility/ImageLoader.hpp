@@ -7,8 +7,7 @@
 
 class StbImageBlob : public IBlob {
 public:
-    StbImageBlob(unsigned char* _data) : m_data(_data) {
-    }
+    StbImageBlob(unsigned char* _data) : m_data(_data) {}
 
     virtual ~StbImageBlob() {
         if (m_data) {
@@ -17,9 +16,7 @@ public:
         }
     }
 
-    const void* data() const override {
-        return m_data;
-    }
+    const void* data() const override { return m_data; }
 
     std::size_t size() const override {
         // nobody cares
@@ -28,7 +25,6 @@ public:
 
 private:
     unsigned char* m_data = nullptr;
-
 };
 
 #endif

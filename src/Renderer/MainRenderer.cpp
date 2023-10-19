@@ -1,9 +1,7 @@
 #include "Renderer/MainRenderer.hpp"
 #include "glm/glm.hpp"
 
-MainRenderer::MainRenderer(Application* app, UIData& ui) :
-    Super(app), m_UI(ui) {
-
+MainRenderer::MainRenderer(Application* app, UIData& ui) : Super(app), m_UI(ui) {
     m_Graphics = GetApplication()->GetGraphics();
 
     // Texture: TextureCache
@@ -18,45 +16,6 @@ MainRenderer::MainRenderer(Application* app, UIData& ui) :
 
     // Camera
 
-    // Objects
-//    m_Vertices = {
-//        // position             // texcoord
-//        -0.5f, -0.5f, 0.0f,     0.0f, 0.0f,
-//        0.5f, -0.5f, 0.0f,      2.0f, 0.0f,
-//        0.5f,  0.5f, 0.0f,      2.0f, 2.0f,
-//        -0.5f,  0.5f, 0.0f,     0.0f, 2.0f,
-//    };
-//
-//    m_Indices = {
-//        0, 1, 2,
-//        0, 2, 3,
-//    };
-//
-//    // OpenGL 4.5
-//    int binding_index = 0;
-//    int offset = 0;
-//    int stride = 5 * sizeof(float);
-//    {
-//        glCreateBuffers(1, &m_VBO);
-//        glNamedBufferStorage(m_VBO, m_Vertices.size() * sizeof(float), m_Vertices.data(), GL_MAP_WRITE_BIT);
-//
-//        glCreateBuffers(1, &m_EBO);
-//        glNamedBufferStorage(m_EBO, m_Indices.size() * sizeof(unsigned int), m_Indices.data(), GL_MAP_WRITE_BIT);
-//
-//        glCreateVertexArrays(1, &m_VAO);
-//        glVertexArrayVertexBuffer(m_VAO, binding_index, m_VBO, offset, stride);
-//        glVertexArrayElementBuffer(m_VAO, m_EBO);
-//
-//        glVertexArrayAttribFormat(m_VAO, 0, 3, GL_FLOAT, GL_FALSE, 0);
-//        glVertexArrayAttribBinding(m_VAO, 0, binding_index);
-//        glEnableVertexArrayAttrib(m_VAO, 0);
-//
-//        glVertexArrayAttribFormat(m_VAO, 1, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(float));
-//        glVertexArrayAttribBinding(m_VAO, 1, binding_index);
-//        glEnableVertexArrayAttrib(m_VAO, 1);
-//    }
-
-
     // Loaded Scene
     SetAsynchronousLoadingEnabled(true);
     SetCurrentScene("The World of Rick Roll");
@@ -66,14 +25,20 @@ MainRenderer::MainRenderer(Application* app, UIData& ui) :
     // m_TextureCache->LoadTextureFromFileDeferred("assets/textures/rickroll.jpg", false);
 }
 
-void MainRenderer::SceneLoaded() {
-    Super::SceneLoaded();
-    m_Scene->CreateRenderingResources(m_Graphics);
+void MainRenderer::SetCurrentScene(const std::string& sceneName) {
+    if (m_CurrentSceneName == sceneName) {
+        return;
+    }
+
+    m_CurrentSceneName = sceneName;
+    BeginLoadingScene();
 }
 
-void MainRenderer::Animate(float deltaTime) {
-
+bool MainRenderer::SetupView() {
+    return true;
 }
+
+void MainRenderer::CreateRenderPasses() {}
 
 void MainRenderer::RenderScene() {
     int windowWidth, windowHeight;
@@ -87,8 +52,8 @@ void MainRenderer::RenderScene() {
     m_Shader->SetInt("MySampler", 0);
 
     auto model = glm::mat4(1.0f);
-    auto view = glm::lookAt(glm::vec3(0, 0, 2), {0, 0, 0}, {0, 1, 0});
-    auto projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
+    auto view = m_Camera.GetWorldToViewMatrix();
+    auto projection = glm::perspective(glm::radians(m_Camera.GetVerticalFov()), aspect, 0.1f, 1000.0f);
 
     m_Shader->SetMat4("Model", model);
     m_Shader->SetMat4("View", view);
@@ -96,11 +61,64 @@ void MainRenderer::RenderScene() {
 
     // Temp
     const auto& instances = m_Scene->GetMeshInstances();
-    for (const auto& instance : instances)
-    {
-        const auto& vao = instance->mesh->buffers->vertexArray->GetID();
+    for (const auto& instance : instances) {
+        const auto& vao = instance->mesh->buffers->vertexArray;
         const auto& indexCount = instance->mesh->numIndices;
 
-        m_Graphics->DrawIndexed(vao, m_Texture->texture->GetID(), indexCount);
+        m_Graphics->DrawIndexed(vao, m_Texture->texture, indexCount);
     }
+}
+
+void MainRenderer::RenderSplashScreen() {
+    GetApplication()->SetVsyncEnabled(true);
+}
+
+bool MainRenderer::LoadScene() {
+    Scene* scene = new Scene();
+
+    if (scene->Load()) {
+        m_Scene = std::unique_ptr<Scene>(scene);
+        return true;
+    }
+
+    return false;
+}
+
+void MainRenderer::SceneLoaded() {
+    Super::SceneLoaded();
+    m_Scene->CreateRenderingResources(m_Graphics);
+
+    // Draw Strategy
+
+    // Process with lights
+
+    // Process with Camera
+    m_Camera.LookAt({ 0.0f, 0.0f, 2.0f }, { 0.0f, 0.0f, 0.0f });
+    m_Camera.SetVerticalFov(45.0f);
+}
+
+void MainRenderer::SceneUnloading() {}
+
+void MainRenderer::Animate(const float& deltaTime) {
+    m_Camera.Animate(deltaTime);
+}
+
+bool MainRenderer::OnKeyboardEvent(const SDL_KeyboardEvent& event) {
+    m_Camera.OnKeyboardEvent(event);
+    return true;
+}
+
+bool MainRenderer::OnMouseButtonEvent(const SDL_MouseButtonEvent& event) {
+    m_Camera.OnMouseButtonEvent(event);
+    return true;
+}
+
+bool MainRenderer::OnMouseMotionEvent(const SDL_MouseMotionEvent& event) {
+    m_Camera.OnMouseMotionEvent(event);
+    return true;
+}
+
+bool MainRenderer::OnMouseWheelEvent(const SDL_MouseWheelEvent& event) {
+    m_Camera.OnMouseWheelEvent(event);
+    return true;
 }

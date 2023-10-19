@@ -3,7 +3,9 @@
 OpenGL 4.5
 
 ## 安裝
+
 需要使用 vcpkg 安裝以下套件：
+
 * sdl2
 * glad
 * glm
@@ -13,6 +15,7 @@ OpenGL 4.5
 > 圖學環境安裝教學請[看這](https://hackmd.io/@23657689/computer_graphics_env_settings) 。
 
 ## TODO
+
 * Camera
 * Light
 * Fog

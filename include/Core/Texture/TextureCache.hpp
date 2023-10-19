@@ -1,13 +1,13 @@
 #ifndef TEXTURECACHE_HPP
 #define TEXTURECACHE_HPP
 
-#include <string>
 #include <atomic>
 #include <filesystem>
 #include <map>
 #include <memory>
 #include <mutex>
 #include <queue>
+#include <string>
 
 #include "Core/Graphics.hpp"
 #include "Core/Texture/ITexture.hpp"
@@ -45,6 +45,7 @@ public:
     std::shared_ptr<LoadedTexture> LoadTextureFromFileDeferred(const std::filesystem::path& path, bool sRGB);
 
     void ProcessRenderingThreadCommands(float timeLimitMilliseconds);
+    void LoadingFinished();
 
 protected:
     bool FindTextureInCache(const std::filesystem::path& path, std::shared_ptr<TextureData>& texture);
@@ -61,7 +62,6 @@ protected:
 
     std::atomic<uint32_t> m_TexturesRequested = 0;
     std::atomic<uint32_t> m_TexturesLoaded = 0;
-
 };
 
 #endif

@@ -6,7 +6,7 @@
 #include "Core/Graphics.hpp"
 #include "Scene/Model.hpp"
 
-class Scene : public IMeshSet{
+class Scene : public IMeshSet {
 public:
     Scene();
     ~Scene();
@@ -23,13 +23,13 @@ protected:
     virtual Model* CreateModel();
 
 private:
-     bool LoadModels();
-     bool LoadLights();
-     bool LoadCameras();
+    bool LoadModels();
+    bool LoadLights();
+    bool LoadCameras();
 
-     std::vector<MeshInfo*>      m_Meshes;
-     std::vector<MeshInstance*>  m_MeshInstances;
-     std::vector<Material*>      m_Materials;
+    std::vector<MeshInfo*>      m_Meshes;
+    std::vector<MeshInstance*>  m_MeshInstances;
+    std::vector<Material*>      m_Materials;
 
     std::vector<std::unique_ptr<Model>> m_models;
 };
