@@ -3,8 +3,11 @@
 
 #include <memory>
 #include <thread>
+#include <string>
+
 #include "App/Application.hpp"
 #include "Core/Texture/TextureCache.hpp"
+#include "Scene/Scene.hpp"
 #include "IRenderPass.hpp"
 
 class SceneRenderer : public IRenderPass {
@@ -20,6 +23,7 @@ public:
     virtual void SceneUnloading();
     virtual void SceneLoaded();
 
+    void SetCurrentScene(const std::string& sceneName);
     void SetAsynchronousLoadingEnabled(bool enabled);
     bool IsSceneLoading() const;
     bool IsSceneLoaded() const;
@@ -29,7 +33,9 @@ public:
 protected:
     typedef IRenderPass Super;
 
+    std::string m_CurrentSceneName;
     std::shared_ptr<TextureCache> m_TextureCache;
+    std::unique_ptr<Scene> m_Scene;
     std::unique_ptr<std::thread> m_SceneLoadingThread;
     bool m_IsAsyncLoad;
 

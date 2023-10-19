@@ -10,8 +10,6 @@
 #include "Core/Graphics.hpp"
 #include "Renderer/IRenderPass.hpp"
 
-class IRenderPass;
-
 class Application {
 public:
     Application() = default;

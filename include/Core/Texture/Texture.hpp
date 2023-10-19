@@ -1,9 +1,6 @@
 #ifndef TEXTURE_HPP
 #define TEXTURE_HPP
 
-#include <cstdint>
-#include <memory>
-
 #include "Core/Graphics.hpp"
 #include "Core/Texture/ITexture.hpp"
 #include "Core/MemoryManager/RefCounter.hpp"

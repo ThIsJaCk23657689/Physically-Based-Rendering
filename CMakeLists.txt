@@ -55,9 +55,11 @@ target_include_directories(${MY_EXECUTABLE} PRIVATE "include" ${STB_INCLUDE_DIRS
 file(GLOB MY_SOURCE CONFIGURE_DEPENDS
     "src/App/*.cpp"
     "src/Core/*.cpp"
+    "src/Core/Buffer/*.cpp"
     "src/Core/Texture/*.cpp"
     "src/FileSystem/*.cpp"
     "src/Renderer/*.cpp"
+    "src/Scene/*.cpp"
     "src/Utility/*.cpp"
     "src/*.cpp"
 )

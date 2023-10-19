@@ -10,7 +10,7 @@
 #include <queue>
 
 #include "Core/Graphics.hpp"
-#include "Core/Texture/Texture.hpp"
+#include "Core/Texture/ITexture.hpp"
 #include "FileSystem/Blob.hpp"
 
 struct LoadedTexture {

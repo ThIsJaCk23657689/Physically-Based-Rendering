@@ -2,6 +2,8 @@
 
 #include <glad/glad.h>
 
+#include "Core/Buffer/Buffer.hpp"
+#include "Core/Buffer/VertexArray.hpp"
 #include "Core/Texture/Texture.hpp"
 #include "Utility/Log.hpp"
 
@@ -17,6 +19,95 @@ void Graphics::Open() {
 
 void Graphics::Close() {
     // clear state ?
+}
+
+void Graphics::SetViewport(const int& x, const int& y, const size_t& width, const size_t& height) {
+    glViewport(x, y, static_cast<GLsizei>(width), static_cast<GLsizei>(height));
+}
+
+void Graphics::ClearCache(const glm::vec4& color) {
+    glClearColor(color.r, color.g, color.b, color.a);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Graphics::Draw(unsigned int vao, unsigned int texture, const size_t& vertexCount) {
+    glBindVertexArray(vao);
+    glBindTextureUnit(0, texture);
+    // glActiveTexture(GL_TEXTURE0);
+    // glBindTexture(GL_TEXTURE_2D, m_Texture);
+    glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertexCount));
+}
+
+void Graphics::DrawIndexed(unsigned int vao, unsigned int texture, const size_t& indexCount) {
+    glBindVertexArray(vao);
+    glBindTextureUnit(0, texture);
+    // glActiveTexture(GL_TEXTURE0);
+    // glBindTexture(GL_TEXTURE_2D, m_Texture);
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indexCount), GL_UNSIGNED_INT, nullptr);
+}
+
+VertexArrayHandle Graphics::CreateVertexArray(const VertexArrayDesc& desc) {
+    unsigned int newVAO = 0;
+    glCreateVertexArrays(1, &newVAO);
+
+    const auto& vbos = desc.vertexBuffers;
+    for (const auto& it : vbos) {
+        unsigned int bindingIndex = it.first;
+        const auto& vbo = it.second;
+        const auto& vboDesc = vbo->GetDesc();
+
+        auto offset = vboDesc.dataOffset;
+        auto stride = vboDesc.structStride;
+        glVertexArrayVertexBuffer(newVAO, bindingIndex, vbo->GetID(), offset, stride);
+    }
+
+    const auto& ebo = desc.elementBuffer;
+    if ( ebo )
+    {
+        glVertexArrayElementBuffer(newVAO, ebo->GetID());
+    }
+
+    auto* vertexArray = new VertexArray(this);
+    vertexArray->desc = desc;
+    vertexArray->id = newVAO;
+    return VertexArrayHandle::Create(vertexArray);
+}
+
+BufferHandle Graphics::CreateBuffer(const BufferDesc& desc) {
+    unsigned int bufferID = 0;
+    glCreateBuffers(1, &bufferID);
+
+    auto* buffer = new Buffer(this);
+    buffer->desc = desc;
+    buffer->id = bufferID;
+    return BufferHandle::Create(buffer);
+}
+
+void Graphics::WriteBuffer(IBuffer* b, const void* data, size_t dataSize) {
+    const auto& desc = b->GetDesc();
+
+    int bufferFlag = GL_MAP_WRITE_BIT;
+    switch (desc.cpuAccess) {
+        case CpuAccessMode::Read:
+            bufferFlag = GL_MAP_READ_BIT ;
+        case CpuAccessMode::Write:
+            bufferFlag = GL_MAP_WRITE_BIT;
+            break;
+        case CpuAccessMode::None:
+        default:
+            assert(0);
+            break;
+    }
+
+    glNamedBufferStorage(b->GetID(), static_cast< GLsizeiptr >( dataSize ), data, bufferFlag);
+}
+
+void Graphics::BindAttributePtr(IVertexArray* vao, uint32_t attributeIndex, uint32_t bindingIndex, int32_t attributeStride, uint32_t relativeOffset) {
+    const auto& desc = vao->GetDesc();
+
+    glVertexArrayAttribFormat(vao->GetID(), attributeIndex, attributeStride, GL_FLOAT, GL_FALSE, relativeOffset);
+    glVertexArrayAttribBinding(vao->GetID(), attributeIndex, bindingIndex);
+    glEnableVertexArrayAttrib(vao->GetID(), attributeIndex);
 }
 
 TextureHandle Graphics::CreateTexture(const TextureDesc& desc, const void* data) {
@@ -56,7 +147,7 @@ TextureHandle Graphics::CreateTexture(const TextureDesc& desc, const void* data)
     }
 
     // OpenGL 4.5
-    unsigned int textureID;
+    unsigned int textureID = 0;
     unsigned int width = desc.width;
     unsigned int height = desc.height;
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);

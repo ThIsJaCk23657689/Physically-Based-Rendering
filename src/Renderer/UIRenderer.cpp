@@ -7,7 +7,7 @@ void UIRenderer::BuildUI() {
 
     const auto& io = ImGui::GetIO();
 
-    if (m_Renderer->IsSceneLoaded()) {
+    if (m_Renderer->IsSceneLoading()) {
         BeginFullScreenWindow();
 
         char messageBuffer[256];

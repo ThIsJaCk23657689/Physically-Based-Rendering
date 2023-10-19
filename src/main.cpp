@@ -8,6 +8,7 @@
 #include "Renderer/UIRenderer.hpp"
 
 int main(int argc, char** argv) {
+
     AppConfig config;
     config.width = 1280;
     config.height = 720;

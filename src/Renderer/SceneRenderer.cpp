@@ -1,18 +1,24 @@
 #include "Renderer/SceneRenderer.hpp"
 
 SceneRenderer::SceneRenderer(Application* app)
-    : Super(app), m_IsAsyncLoad(true), m_SceneLoaded(false) {
+    : Super(app), m_IsAsyncLoad(false), m_SceneLoaded(false) {
 
 }
 
 void SceneRenderer::Render() {
+    if (m_TextureCache)
+    {
+        m_TextureCache->ProcessRenderingThreadCommands(20.0f);
+    }
+
     if (!m_SceneLoaded)
     {
         RenderSplashScreen();
         return;
     }
 
-    if (m_SceneLoaded && m_SceneLoadingThread)
+    // If multi-thread...
+    if (m_SceneLoadingThread)
     {
         m_SceneLoadingThread->join();
         m_SceneLoadingThread = nullptr;
@@ -32,7 +38,14 @@ void SceneRenderer::RenderSplashScreen() {
 }
 
 bool SceneRenderer::LoadScene() {
-    return true;
+    Scene* scene = new Scene();
+
+    if (scene->Load()) {
+        m_Scene = std::unique_ptr<Scene>(scene);
+        return true;
+    }
+
+    return false;
 }
 
 void SceneRenderer::SceneUnloading() {
@@ -40,7 +53,21 @@ void SceneRenderer::SceneUnloading() {
 }
 
 void SceneRenderer::SceneLoaded() {
+    if (m_TextureCache)
+    {
+        m_TextureCache->ProcessRenderingThreadCommands(0.0f);
+        // m_TextureCache->LoadingFinished();
+    }
     m_SceneLoaded = true;
+}
+
+void SceneRenderer::SetCurrentScene(const std::string& sceneName) {
+    if ( m_CurrentSceneName == sceneName ) {
+        return;
+    }
+
+    m_CurrentSceneName = sceneName;
+    BeginLoadingScene();
 }
 
 void SceneRenderer::SetAsynchronousLoadingEnabled(bool enabled) {
@@ -61,8 +88,14 @@ void SceneRenderer::BeginLoadingScene() {
         SceneUnloading();
     }
 
+    // reset all resource
     m_SceneLoaded = false;
+    if (m_TextureCache)
+    {
+        m_TextureCache->Reset();
+    }
 
+    // determine multi-thread or not
     if (m_IsAsyncLoad)
     {
         m_SceneLoadingThread = std::make_unique<std::thread>([this](){ m_SceneLoaded = LoadScene(); });

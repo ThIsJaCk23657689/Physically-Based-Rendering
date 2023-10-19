@@ -1,7 +1,7 @@
 #include "Renderer/ImGuiRenderer.hpp"
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
-#include <imgui_impl_sdl.h>
+#include <imgui_impl_sdl2.h>
 
 ImGuiRenderer::ImGuiRenderer(Application* app)
     : IRenderPass(app) {
@@ -56,7 +56,7 @@ void ImGuiRenderer::BeginFullScreenWindow() {
     ImGui::SetNextWindowSize(ImVec2(float(width), float(height)), ImGuiCond_Always);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
     ImGui::SetNextWindowBgAlpha(0.0f);
-    ImGui::Begin("", 0, ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
+    ImGui::Begin("Loading Screen", 0, ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
 }
 
 void ImGuiRenderer::DrawScreenCenteredText(const char* text) {
