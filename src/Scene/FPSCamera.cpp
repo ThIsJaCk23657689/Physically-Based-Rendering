@@ -46,9 +46,8 @@ void FPSCamera::Animate(const float& deltaTime) {
     glm::vec2 mouseMove = m_MousePos - m_MousePosPrev;
     m_MousePosPrev = m_MousePos;
 
-    bool cameraDirty = false;
-
     // Handle mouse rotation first
+    bool rotateDirty = false;
     if (mouseButtonState[MouseButtons::Left] && (!Math::IsZero(mouseMove.x) || !Math::IsZero(mouseMove.y))) {
         // update yaw and pitch
         m_Yaw += m_RotateSpeed * mouseMove.x;
@@ -62,42 +61,10 @@ void FPSCamera::Animate(const float& deltaTime) {
             m_Pitch = 89.0f;
         }
 
-        cameraDirty = true;
+        rotateDirty = true;
     }
 
-    // Handle translation
-    float moveStep = deltaTime * m_MoveSpeed;
-    m_Velocity = glm::vec3(0.0f);
-
-    if (keyboardState[KeyboardControls::SpeedUp]) {
-        moveStep *= 3.0f;
-    }
-
-    if (keyboardState[KeyboardControls::SlowDown]) {
-        moveStep *= 0.1f;
-    }
-
-    if (keyboardState[KeyboardControls::MoveForward]) {
-        cameraDirty = true;
-        m_Velocity += m_Front * moveStep;
-    }
-
-    if (keyboardState[KeyboardControls::MoveBackward]) {
-        cameraDirty = true;
-        m_Velocity += -m_Front * moveStep;
-    }
-
-    if (keyboardState[KeyboardControls::MoveLeft]) {
-        cameraDirty = true;
-        m_Velocity += -m_Right * moveStep;
-    }
-
-    if (keyboardState[KeyboardControls::MoveRight]) {
-        cameraDirty = true;
-        m_Velocity += m_Right * moveStep;
-    }
-
-    if (cameraDirty) {
+    if (rotateDirty) {
         // currently does not support z-axis rotation
         glm::vec3 WorldUp = { 0.0f, 1.0f, 0.0f };
 
@@ -113,8 +80,46 @@ void FPSCamera::Animate(const float& deltaTime) {
         m_Front = glm::normalize(glm::vec3(temp_front));
         m_Right = glm::normalize(glm::cross(m_Front, WorldUp));
         m_Up = glm::normalize(glm::cross(m_Right, m_Front));
+    }
 
-        m_Position += m_Velocity;
+
+
+    // Handle translation
+    if (keyboardState[KeyboardControls::SpeedUp]) {
+        m_MoveSpeed *= 3.0f;
+    }
+
+    if (keyboardState[KeyboardControls::SlowDown]) {
+        m_MoveSpeed *= 0.1f;
+    }
+
+    if (keyboardState[KeyboardControls::MoveForward]) {
+        m_Acceleration += m_Front * m_MoveSpeed;
+    }
+
+    if (keyboardState[KeyboardControls::MoveBackward]) {
+        m_Acceleration += -m_Front * m_MoveSpeed;
+    }
+
+    if (keyboardState[KeyboardControls::MoveLeft]) {
+        m_Acceleration += -m_Right * m_MoveSpeed;
+    }
+
+    if (keyboardState[KeyboardControls::MoveRight]) {
+        m_Acceleration += m_Right * m_MoveSpeed;
+    }
+
+    bool translateDirty = false;
+    if (!Math::IsZero(glm::length(m_Acceleration)) || !Math::IsZero(glm::length(m_Velocity))) {
+        m_Velocity += m_Acceleration;
+        m_Acceleration = glm::vec3(0.0f);
+
+        m_Position += m_Velocity * deltaTime;
+        m_Velocity *= 0.90f;
+        translateDirty = true;
+    }
+
+    if ( rotateDirty || translateDirty ) {
         UpdateWorldToView();
     }
 }

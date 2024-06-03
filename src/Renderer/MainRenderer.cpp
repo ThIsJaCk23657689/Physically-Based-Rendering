@@ -15,7 +15,7 @@ MainRenderer::MainRenderer(Application* app, UIData& ui) : Super(app), m_UI(ui) 
     // ShadowMap (CascadedShadowMap) FrameBufferFactory
 
     m_Camera = std::make_unique<FPSCamera>();
-    m_Camera->SetMoveSpeed(3.0f);
+    m_Camera->SetMoveSpeed(1.0f);
 
     // Loaded Scene
     SetAsynchronousLoadingEnabled(true);

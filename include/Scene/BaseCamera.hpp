@@ -27,6 +27,7 @@ public:
     float m_Yaw;                   // In deg
     glm::vec3 m_Position;          // In world space
     glm::vec3 m_Velocity;
+    glm::vec3 m_Acceleration;
     glm::vec3 m_Right;             // normalized
     glm::vec3 m_Front;             // normalized
     glm::vec3 m_Up;                // normalized

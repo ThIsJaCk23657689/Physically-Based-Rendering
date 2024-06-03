@@ -4,6 +4,8 @@
 
 BaseCamera::BaseCamera() :
     m_Position({ 0.0f, 0.0f, 0.0f }),
+    m_Velocity(0.0f),
+    m_Acceleration(0.0f),
     m_Front({ 0.0f, 0.0f, -1.0f }),
     m_Right({ 1.0f, 0.0f, 0.0f }),
     m_Up({ 0.0f, 1.0f, 0.0f }),
@@ -35,11 +37,5 @@ void BaseCamera::BaseLookAt(glm::vec3 position, glm::vec3 target, glm::vec3 worl
 }
 
 void BaseCamera::UpdateWorldToView() {
-    //    glm::mat4 rotation = glm::mat4( glm::vec4( m_Right, 0.0f ),
-    //                                    glm::vec4( m_Up, 0.0f ),
-    //                                    glm::vec4( m_Front, 0.0f ),
-    //                                    glm::vec4( 0.0f ) );
-    //    glm::mat4 translation = glm::translate(glm::mat4(1.0f), -m_Position);
-    //    m_MatWorldToView = rotation;
     m_MatWorldToView = glm::lookAt(m_Position, m_Position + m_Front, { 0.0f, 1.0f, 0.0f });
 }
