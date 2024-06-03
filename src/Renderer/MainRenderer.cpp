@@ -1,6 +1,9 @@
 #include "Renderer/MainRenderer.hpp"
-#include "Scene/FPSCamera.hpp"
+#include "Core/Graphics.hpp"
+#include "Core/Shader.hpp"
 #include "UIData.hpp"
+#include "Scene/Scene.hpp"
+#include "Core/Texture/TextureCache.hpp"
 #include "glm/glm.hpp"
 
 MainRenderer::MainRenderer(Application* app, UIData& ui) : Super(app), m_UI(ui) {

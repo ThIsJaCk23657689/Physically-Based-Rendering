@@ -4,11 +4,13 @@
 #include <string>
 #include <vector>
 
-#include "Core/Graphics.hpp"
-#include "Core/Shader.hpp"
 #include "Renderer/SceneRenderer.hpp"
+#include "Scene/FPSCamera.hpp"
 
-class FPSCamera;
+class Graphics;
+class Shader;
+class Scene;
+struct LoadedTexture;
 struct UIData;
 
 class MainRenderer : public SceneRenderer {

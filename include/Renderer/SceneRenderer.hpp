@@ -5,11 +5,10 @@
 #include <string>
 #include <thread>
 
-#include "App/Application.hpp"
-#include "Core/Texture/TextureCache.hpp"
 #include "IRenderPass.hpp"
-#include "Scene/Scene.hpp"
 
+class Application;
+class TextureCache;
 class SceneRenderer : public IRenderPass {
 public:
     SceneRenderer(Application* app);

@@ -1,4 +1,6 @@
 #include "Renderer/UIRenderer.hpp"
+#include "Renderer/MainRenderer.hpp"
+#include "Scene/FPSCamera.hpp"
 
 void UIRenderer::BuildUI() {
     if (!m_UI.showUI) {

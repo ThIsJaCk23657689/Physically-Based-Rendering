@@ -1,4 +1,6 @@
 #include "Renderer/SceneRenderer.hpp"
+#include "App/Application.hpp"
+#include "Core/Texture/TextureCache.hpp"
 
 SceneRenderer::SceneRenderer(Application* app) : Super(app), m_IsAsyncLoad(false), m_SceneLoaded(false) {}
 

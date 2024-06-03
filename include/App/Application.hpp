@@ -7,8 +7,11 @@
 #include <vector>
 
 #include "App/AppConfig.hpp"
-#include "Core/Graphics.hpp"
-#include "Renderer/IRenderPass.hpp"
+#include "Core/MemoryManager/RefCountPtr.hpp"
+
+class IGraphics;
+using GraphicsHandle = RefCountPtr<IGraphics>;
+class IRenderPass;
 
 class Application {
 public:

@@ -5,10 +5,11 @@
 #include <memory>
 #include <cstdio>
 
-#include "App/Application.hpp"
 #include "Renderer/ImGuiRenderer.hpp"
-#include "Renderer/MainRenderer.hpp"
 #include "UIData.hpp"
+
+class Application;
+class MainRenderer;
 
 class UIRenderer : public ImGuiRenderer {
 public:

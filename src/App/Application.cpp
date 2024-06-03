@@ -5,6 +5,7 @@
 #include <cassert>
 #include <mutex>
 
+#include "Renderer/IRenderPass.hpp"
 #include "Utility/Log.hpp"
 
 static std::recursive_mutex g_contextManagerMutex;
