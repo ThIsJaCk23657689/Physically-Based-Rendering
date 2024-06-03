@@ -33,7 +33,7 @@ void UIRenderer::BuildUI() {
                 ImGui::EndTabItem();
             }
             if (ImGui::BeginTabItem("Camera")) {
-                const auto& camera = m_Renderer->GetMainCamera();
+                auto camera = m_Renderer->GetMainCamera();
                 ImGui::Text("Position = (%.2f, %.2f, %.2f)", camera->m_Position.x, camera->m_Position.y, camera->m_Position.z);
                 ImGui::Text("Velocity = (%.2f, %.2f, %.2f)", camera->m_Velocity.x, camera->m_Velocity.y, camera->m_Velocity.z);
                 ImGui::Text("Front = (%.2f, %.2f, %.2f)", camera->m_Front.x, camera->m_Front.y, camera->m_Front.z);
@@ -41,7 +41,7 @@ void UIRenderer::BuildUI() {
                 ImGui::Text("Up = (%.2f, %.2f, %.2f)", camera->m_Up.x, camera->m_Up.y, camera->m_Up.z);
                 ImGui::Text("Pitch = %.2f deg", camera->m_Pitch);
                 ImGui::Text("Yaw = %.2f deg", camera->m_Yaw);
-                ImGui::Text("Fov = %2.f deg", camera->m_VerticalFov);
+                ImGui::SliderFloat("FovY", &camera->m_VerticalFov, 20.0f, 90.0f);
                 ImGui::EndTabItem();
             }
             ImGui::EndTabBar();

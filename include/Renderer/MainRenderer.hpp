@@ -19,7 +19,7 @@ public:
 
     std::shared_ptr<TextureCache> GetTextureCache() { return m_TextureCache; }
     std::shared_ptr<Scene> GetScene() { return m_Scene; }
-    const FPSCamera* GetMainCamera() { return m_Camera.get(); }
+    FPSCamera* GetMainCamera() { return m_Camera.get(); }
 
     bool SetupView();
     void CreateRenderPasses();
