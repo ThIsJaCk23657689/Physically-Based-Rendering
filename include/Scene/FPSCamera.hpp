@@ -7,6 +7,14 @@
 #include <map>
 #include "BaseCamera.hpp"
 
+struct CameraPreset {
+    std::string name;
+    glm::vec3 position = {0.0, 0.0, 0.0};
+    glm::vec3 target = {0.0, 0.0, -1.0};
+    glm::vec3 up = { 0.0f, 1.0f, 0.0f };
+    float fovY = 45.0f;
+};
+
 class FPSCamera : public BaseCamera {
 public:
     virtual void OnKeyboardEvent(const SDL_KeyboardEvent& event) override;

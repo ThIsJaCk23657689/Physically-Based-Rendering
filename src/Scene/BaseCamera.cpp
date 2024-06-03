@@ -7,7 +7,8 @@ BaseCamera::BaseCamera() :
     m_Front({ 0.0f, 0.0f, -1.0f }),
     m_Right({ 1.0f, 0.0f, 0.0f }),
     m_Up({ 0.0f, 1.0f, 0.0f }),
-    m_MatWorldToView(glm::mat4(1.0f)) {}
+    m_MatWorldToView(glm::mat4(1.0f)),
+    m_VerticalFov(45.0f) {}
 
 void BaseCamera::Animate(const float& deltaTime) {}
 

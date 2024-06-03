@@ -1,4 +1,5 @@
 #include "Scene/FPSCamera.hpp"
+#include "Utility/Math.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
 void FPSCamera::LookAt(glm::vec3 position, glm::vec3 target, glm::vec3 worldUp) {
@@ -46,23 +47,27 @@ void FPSCamera::Animate(const float& deltaTime) {
     m_MousePosPrev = m_MousePos;
 
     bool cameraDirty = false;
-    glm::mat4 cameraRotation = glm::mat4(1.0f);
 
     // Handle mouse rotation first
-    // this will affect the movement vectors in the world matrix
-    if (mouseButtonState[MouseButtons::Left] && (mouseMove.x || mouseMove.y)) {
-        float yaw = m_RotateSpeed * mouseMove.x;
-        float pitch = m_RotateSpeed * mouseMove.y;
+    if (mouseButtonState[MouseButtons::Left] && (!Math::IsZero(mouseMove.x) || !Math::IsZero(mouseMove.y))) {
+        // update yaw and pitch
+        m_Yaw += m_RotateSpeed * mouseMove.x;
+        m_Pitch += m_RotateSpeed * -mouseMove.y;
 
-        cameraRotation = glm::rotate(cameraRotation, glm::radians(-yaw), glm::vec3(0.0f, 1.0f, 0.0f));
-        cameraRotation = glm::rotate(cameraRotation, glm::radians(pitch), m_Right);
+        // constraint
+        if (m_Yaw >= 360.0f || m_Yaw <= -360.0f) {
+            m_Yaw = 0.0f;
+        }
+        if (m_Pitch > 89.0f || m_Pitch < -89.0f) {
+            m_Pitch = 89.0f;
+        }
 
         cameraDirty = true;
     }
 
     // Handle translation
     float moveStep = deltaTime * m_MoveSpeed;
-    glm::vec3 cameraMoveVector = glm::vec3(0.0f);
+    m_Velocity = glm::vec3(0.0f);
 
     if (keyboardState[KeyboardControls::SpeedUp]) {
         moveStep *= 3.0f;
@@ -74,30 +79,42 @@ void FPSCamera::Animate(const float& deltaTime) {
 
     if (keyboardState[KeyboardControls::MoveForward]) {
         cameraDirty = true;
-        cameraMoveVector += m_Front * moveStep;
+        m_Velocity += m_Front * moveStep;
     }
 
     if (keyboardState[KeyboardControls::MoveBackward]) {
         cameraDirty = true;
-        cameraMoveVector += -m_Front * moveStep;
+        m_Velocity += -m_Front * moveStep;
     }
 
     if (keyboardState[KeyboardControls::MoveLeft]) {
         cameraDirty = true;
-        cameraMoveVector += -m_Right * moveStep;
+        m_Velocity += -m_Right * moveStep;
     }
 
     if (keyboardState[KeyboardControls::MoveRight]) {
         cameraDirty = true;
-        cameraMoveVector += m_Right * moveStep;
+        m_Velocity += m_Right * moveStep;
     }
 
     if (cameraDirty) {
-        m_Position += cameraMoveVector;
-        m_Front = glm::normalize(cameraRotation * glm::vec4(m_Front, 1.0f));
-        m_Up = glm::normalize(cameraRotation * glm::vec4(m_Up, 1.0f));
-        m_Right = glm::normalize(glm::cross(m_Front, m_Up));
+        // currently does not support z-axis rotation
+        glm::vec3 WorldUp = { 0.0f, 1.0f, 0.0f };
 
+        // Update rotate matrix
+        auto cameraRotation = glm::mat4(1.0f);
+        cameraRotation = glm::rotate(cameraRotation, glm::radians(-m_Yaw), glm::vec3(0.0f, 1.0f, 0.0f));
+        cameraRotation = glm::rotate(cameraRotation, glm::radians(m_Pitch), glm::vec3(1.0f, 0.0f, 0.0f));
+
+        // Camera always faces neg-z
+        glm::vec4 temp_front = glm::vec4(0.0f, 0.0f, -1.0f, 1.0f);
+        temp_front = cameraRotation * temp_front;
+
+        m_Front = glm::normalize(glm::vec3(temp_front));
+        m_Right = glm::normalize(glm::cross(m_Front, WorldUp));
+        m_Up = glm::normalize(glm::cross(m_Right, m_Front));
+
+        m_Position += m_Velocity;
         UpdateWorldToView();
     }
 }
