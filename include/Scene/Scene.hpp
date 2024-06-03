@@ -3,15 +3,17 @@
 
 #include <vector>
 #include <memory>
+#include "UIData.hpp"
 #include "Core/Graphics.hpp"
 #include "Scene/Model.hpp"
+#include "Scene/FPSCamera.hpp"
 
 class Scene : public IMeshSet {
 public:
     Scene();
     ~Scene();
 
-    virtual bool Load();
+    virtual bool Load(const UI::Project& uiProject);
     void CreateRenderingResources(IGraphics* graphics);
 
     // IMeshSet implementation
@@ -23,15 +25,21 @@ protected:
     virtual Model* CreateModel();
 
 private:
-    bool LoadModels();
-    bool LoadLights();
-    bool LoadCameras();
+    bool LoadModels(const std::vector<UI::BaseNode>& uiObjects);
+    bool LoadLights(const std::vector<UI::Light>& uiLights);
+    bool LoadCameras(const std::vector<UI::Camera>& uiCameras);
 
     std::vector<MeshInfo*>      m_Meshes;
     std::vector<MeshInstance*>  m_MeshInstances;
     std::vector<Material*>      m_Materials;
 
-    std::vector<std::unique_ptr<Model>> m_models;
+    std::vector<std::unique_ptr<Model>> m_Models;
+    std::vector<std::shared_ptr<CameraPreset>> m_Cameras;
+
+public:
+    std::shared_ptr<CameraPreset> DefaultCamera;
+    std::shared_ptr<CameraPreset> GetCameraByName(const std::string& name);
+
 };
 
 #endif
