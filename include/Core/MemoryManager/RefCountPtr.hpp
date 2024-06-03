@@ -11,7 +11,7 @@ public:
     typedef T InterfaceType;
 
     // ---------- SFINAE ----------
-    template<bool b, typename U = void>
+    template<bool B, typename U = void>
     struct EnableIf {};
 
     template<typename U>
