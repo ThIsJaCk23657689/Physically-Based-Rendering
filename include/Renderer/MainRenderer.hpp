@@ -19,6 +19,7 @@ public:
 
     std::shared_ptr<TextureCache> GetTextureCache() { return m_TextureCache; }
     std::shared_ptr<Scene> GetScene() { return m_Scene; }
+    const FPSCamera* GetMainCamera() { return m_Camera.get(); }
 
     bool SetupView();
     void CreateRenderPasses();
@@ -48,8 +49,7 @@ private:
     std::shared_ptr<Shader> m_Shader = nullptr;
 
     // IView
-
-    FPSCamera m_Camera;
+    std::unique_ptr<FPSCamera> m_Camera;
     std::shared_ptr<LoadedTexture> m_Texture;
 
     UIData& m_UI;

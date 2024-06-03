@@ -14,7 +14,8 @@ MainRenderer::MainRenderer(Application* app, UIData& ui) : Super(app), m_UI(ui) 
 
     // ShadowMap (CascadedShadowMap) FrameBufferFactory
 
-    // Camera
+    m_Camera = std::make_unique<FPSCamera>();
+    m_Camera->SetMoveSpeed(3.0f);
 
     // Loaded Scene
     SetAsynchronousLoadingEnabled(true);
@@ -52,8 +53,8 @@ void MainRenderer::RenderScene() {
     m_Shader->SetInt("MySampler", 0);
 
     auto model = glm::mat4(1.0f);
-    auto view = m_Camera.GetWorldToViewMatrix();
-    auto projection = glm::perspective(glm::radians(m_Camera.GetVerticalFov()), aspect, 0.1f, 1000.0f);
+    auto view = m_Camera->GetWorldToViewMatrix();
+    auto projection = glm::perspective(glm::radians(m_Camera->m_VerticalFov), aspect, 0.1f, 1000.0f);
 
     m_Shader->SetMat4("Model", model);
     m_Shader->SetMat4("View", view);
@@ -76,7 +77,8 @@ void MainRenderer::RenderSplashScreen() {
 bool MainRenderer::LoadScene() {
     Scene* scene = new Scene();
 
-    if (scene->Load()) {
+    // load ui scene data to create real scene object
+    if (scene->Load(m_UI.project)) {
         m_Scene = std::unique_ptr<Scene>(scene);
         return true;
     }
@@ -93,32 +95,32 @@ void MainRenderer::SceneLoaded() {
     // Process with lights
 
     // Process with Camera
-    m_Camera.LookAt({ 0.0f, 0.0f, 2.0f }, { 0.0f, 0.0f, 0.0f });
-    m_Camera.SetVerticalFov(45.0f);
+    m_Camera->LookAt(m_Scene->DefaultCamera->position, m_Scene->DefaultCamera->target);
+    m_Camera->SetVerticalFov(m_Scene->DefaultCamera->fovY);
 }
 
 void MainRenderer::SceneUnloading() {}
 
 void MainRenderer::Animate(const float& deltaTime) {
-    m_Camera.Animate(deltaTime);
+    m_Camera->Animate(deltaTime);
 }
 
 bool MainRenderer::OnKeyboardEvent(const SDL_KeyboardEvent& event) {
-    m_Camera.OnKeyboardEvent(event);
+    m_Camera->OnKeyboardEvent(event);
     return true;
 }
 
 bool MainRenderer::OnMouseButtonEvent(const SDL_MouseButtonEvent& event) {
-    m_Camera.OnMouseButtonEvent(event);
+    m_Camera->OnMouseButtonEvent(event);
     return true;
 }
 
 bool MainRenderer::OnMouseMotionEvent(const SDL_MouseMotionEvent& event) {
-    m_Camera.OnMouseMotionEvent(event);
+    m_Camera->OnMouseMotionEvent(event);
     return true;
 }
 
 bool MainRenderer::OnMouseWheelEvent(const SDL_MouseWheelEvent& event) {
-    m_Camera.OnMouseWheelEvent(event);
+    m_Camera->OnMouseWheelEvent(event);
     return true;
 }
