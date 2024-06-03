@@ -109,6 +109,14 @@ void FPSCamera::Animate(const float& deltaTime) {
         m_Acceleration += m_Right * m_MoveSpeed;
     }
 
+    if (keyboardState[KeyboardControls::MoveUp]) {
+        m_Acceleration.y += m_MoveSpeed * 1;
+    }
+
+    if (keyboardState[KeyboardControls::MoveDown]) {
+        m_Acceleration.y -= m_MoveSpeed * 1;
+    }
+
     bool translateDirty = false;
     if (!Math::IsZero(glm::length(m_Acceleration)) || !Math::IsZero(glm::length(m_Velocity))) {
         m_Velocity += m_Acceleration;
