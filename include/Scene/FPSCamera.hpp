@@ -23,11 +23,13 @@ public:
     virtual void OnMouseWheelEvent(const SDL_MouseWheelEvent& event) override;
     virtual void Animate(const float& deltaTime) override;
 
+    void SwitchCameraCursorMode();
     void LookAt(glm::vec3 position, glm::vec3 target, glm::vec3 worldUp = { 0.0f, 1.0f, 0.0f });
 
 private:
-    glm::vec2 m_MousePos;
-    glm::vec2 m_MousePosPrev;
+    bool m_CameraCursorMode = false;
+    bool m_MouseInitialized = false;
+    glm::vec2 m_MouseRelPos;
 
     typedef enum {
         MoveForward,

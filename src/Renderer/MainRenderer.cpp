@@ -1,4 +1,6 @@
 #include "Renderer/MainRenderer.hpp"
+#include "Scene/FPSCamera.hpp"
+#include "UIData.hpp"
 #include "glm/glm.hpp"
 
 MainRenderer::MainRenderer(Application* app, UIData& ui) : Super(app), m_UI(ui) {
@@ -106,6 +108,14 @@ void MainRenderer::Animate(const float& deltaTime) {
 }
 
 bool MainRenderer::OnKeyboardEvent(const SDL_KeyboardEvent& event) {
+    const auto scancode = event.keysym.scancode;
+    if (keyboardMap.find(scancode) != keyboardMap.end()) {
+        auto applicationKey = keyboardMap.at(scancode);
+        if (event.state == SDL_PRESSED || event.repeat != 0) {
+            m_Camera->SwitchCameraCursorMode();
+        }
+    }
+
     m_Camera->OnKeyboardEvent(event);
     return true;
 }

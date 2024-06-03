@@ -7,8 +7,9 @@
 #include "Core/Graphics.hpp"
 #include "Core/Shader.hpp"
 #include "Renderer/SceneRenderer.hpp"
-#include "Scene/FPSCamera.hpp"
-#include "UIData.hpp"
+
+class FPSCamera;
+struct UIData;
 
 class MainRenderer : public SceneRenderer {
 public:
@@ -53,6 +54,15 @@ private:
     std::shared_ptr<LoadedTexture> m_Texture;
 
     UIData& m_UI;
+
+    typedef enum {
+        SwitchCursorShowHide,
+        KeyboardControlCount
+    } KeyboardControls;
+
+    const std::map<int, int> keyboardMap = {
+        { SDL_SCANCODE_TAB, KeyboardControls::SwitchCursorShowHide }
+    };
 };
 
 #endif

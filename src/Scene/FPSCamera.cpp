@@ -2,6 +2,8 @@
 #include "Utility/Math.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <iostream>
+
 void FPSCamera::LookAt(glm::vec3 position, glm::vec3 target, glm::vec3 worldUp) {
     // Make the base method public.
     BaseLookAt(position, target, worldUp);
@@ -35,23 +37,38 @@ void FPSCamera::OnMouseButtonEvent(const SDL_MouseButtonEvent& event) {
     }
 }
 
-void FPSCamera::OnMouseMotionEvent(const SDL_MouseMotionEvent& event) {
-    m_MousePos = { event.x, event.y };
-}
+void FPSCamera::OnMouseMotionEvent(const SDL_MouseMotionEvent& event) {}
 
 void FPSCamera::OnMouseWheelEvent(const SDL_MouseWheelEvent& event) {}
 
 void FPSCamera::Animate(const float& deltaTime) {
-    // track mouse delta
-    glm::vec2 mouseMove = m_MousePos - m_MousePosPrev;
-    m_MousePosPrev = m_MousePos;
+    // track mouse position
+    if (m_CameraCursorMode) {
+        SDL_SetRelativeMouseMode(SDL_TRUE);
+
+        int xOffset, yOffset;
+        SDL_GetRelativeMouseState(&xOffset, &yOffset);
+
+        // when switch to Camera mode, we ignore the first relative mouse position to avoid rapidly mouse offset
+        if (!m_MouseInitialized) {
+            SDL_GetRelativeMouseState(&xOffset, &yOffset);
+            m_MouseInitialized = true;
+        }
+        m_MouseRelPos = { xOffset, yOffset };
+    }
+    else
+    {
+        SDL_SetRelativeMouseMode(SDL_FALSE);
+        m_MouseRelPos = { 0, 0 };
+        m_MouseInitialized = false;
+    }
 
     // Handle mouse rotation first
     bool rotateDirty = false;
-    if (mouseButtonState[MouseButtons::Left] && (!Math::IsZero(mouseMove.x) || !Math::IsZero(mouseMove.y))) {
+    if (!Math::IsZero(m_MouseRelPos.x) || !Math::IsZero(m_MouseRelPos.y)) {
         // update yaw and pitch
-        m_Yaw += m_RotateSpeed * mouseMove.x;
-        m_Pitch += m_RotateSpeed * -mouseMove.y;
+        m_Yaw += m_RotateSpeed * m_MouseRelPos.x;
+        m_Pitch += m_RotateSpeed * -m_MouseRelPos.y;
 
         // constraint
         if (m_Yaw >= 360.0f || m_Yaw <= -360.0f) {
@@ -130,4 +147,8 @@ void FPSCamera::Animate(const float& deltaTime) {
     if ( rotateDirty || translateDirty ) {
         UpdateWorldToView();
     }
+}
+
+void FPSCamera::SwitchCameraCursorMode() {
+    m_CameraCursorMode = !m_CameraCursorMode;
 }
