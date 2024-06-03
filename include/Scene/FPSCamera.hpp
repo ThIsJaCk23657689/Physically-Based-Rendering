@@ -66,7 +66,7 @@ private:
         { SDL_SCANCODE_W, KeyboardControls::MoveForward },  { SDL_SCANCODE_A, KeyboardControls::MoveLeft },
         { SDL_SCANCODE_S, KeyboardControls::MoveBackward }, { SDL_SCANCODE_D, KeyboardControls::MoveRight },
 
-        { SDL_SCANCODE_SPACE, KeyboardControls::MoveUp },   { SDL_SCANCODE_LSHIFT, KeyboardControls::MoveDown },
+        { SDL_SCANCODE_SPACE, KeyboardControls::MoveUp },   { SDL_SCANCODE_LCTRL, KeyboardControls::MoveDown },
     };
 
     const std::map<int, int> mouseButtonMap = { { SDL_BUTTON_LEFT, MouseButtons::Left },
