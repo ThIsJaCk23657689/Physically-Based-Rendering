@@ -7,12 +7,13 @@
 
 class Graphics;
 
-class Buffer : public RefCounter<IBuffer> {
+class Buffer : public RefCounter< IBuffer >
+{
 public:
-    Buffer(Graphics* _parent) : parent(_parent), id(0) {}
+    explicit Buffer( Graphics* _parent ) : parent( _parent ), id( 0 ) {}
     const BufferDesc& GetDesc() const override { return desc; }
-    const unsigned int GetID() const override { return id; }
-    GLObject GetGLObject(GLObjectType objectType) override;
+    unsigned int GetID() const override { return id; }
+    GLObject GetGLObject( GLObjectType objectType ) override;
 
     Graphics* parent;
     BufferDesc desc;

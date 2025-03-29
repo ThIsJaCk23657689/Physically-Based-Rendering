@@ -3,7 +3,8 @@
 
 #include <string>
 
-struct AppConfig {
+struct AppConfig
+{
     unsigned int width = 800;
     unsigned int height = 600;
     std::string title = "Hello World!";

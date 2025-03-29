@@ -8,22 +8,23 @@
 
 class Application;
 
-class IRenderPass {
+class IRenderPass
+{
 public:
-    IRenderPass(Application* app) : m_App(app) {}
+    IRenderPass( Application* app ) : m_App( app ) {}
 
     virtual void Render() {}
-    virtual void Animate(const float& deltaTime) {}
+    virtual void Animate( const float& deltaTime ) {}
     virtual void BackBufferResizing() {}
-    virtual void BackBufferResized(const uint32_t width, const uint32_t height) {}
+    virtual void BackBufferResized( const uint32_t width, const uint32_t height ) {}
 
     // Event functions
-    virtual bool ProcessEvent(const SDL_Event& event) { return false; }
-    virtual bool OnKeyboardEvent(const SDL_KeyboardEvent& event) { return false; }
-    virtual bool OnTextInputEvent(const SDL_TextInputEvent& event) { return false; }
-    virtual bool OnMouseButtonEvent(const SDL_MouseButtonEvent& event) { return false; }
-    virtual bool OnMouseMotionEvent(const SDL_MouseMotionEvent& event) { return false; }
-    virtual bool OnMouseWheelEvent(const SDL_MouseWheelEvent& event) { return false; }
+    virtual bool ProcessEvent( const SDL_Event& event ) { return false; }
+    virtual bool OnKeyboardEvent( const SDL_KeyboardEvent& event ) { return false; }
+    virtual bool OnTextInputEvent( const SDL_TextInputEvent& event ) { return false; }
+    virtual bool OnMouseButtonEvent( const SDL_MouseButtonEvent& event ) { return false; }
+    virtual bool OnMouseMotionEvent( const SDL_MouseMotionEvent& event ) { return false; }
+    virtual bool OnMouseWheelEvent( const SDL_MouseWheelEvent& event ) { return false; }
 
     inline Application* GetApplication() { return m_App; }
 

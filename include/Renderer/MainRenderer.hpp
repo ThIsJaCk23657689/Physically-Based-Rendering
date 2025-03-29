@@ -13,15 +13,16 @@ class Scene;
 struct LoadedTexture;
 struct UIData;
 
-class MainRenderer : public SceneRenderer {
+class MainRenderer : public SceneRenderer
+{
 public:
-    MainRenderer(Application* app, UIData& ui);
+    MainRenderer( Application* app, UIData& ui );
 
     std::string GetCurrentSceneName() const { return m_CurrentSceneName; }
-    void SetCurrentScene(const std::string& sceneName);
+    void SetCurrentScene( const std::string& sceneName );
 
-    std::shared_ptr<TextureCache> GetTextureCache() { return m_TextureCache; }
-    std::shared_ptr<Scene> GetScene() { return m_Scene; }
+    std::shared_ptr< TextureCache > GetTextureCache() { return m_TextureCache; }
+    std::shared_ptr< Scene > GetScene() { return m_Scene; }
     FPSCamera* GetMainCamera() { return m_Camera.get(); }
 
     bool SetupView();
@@ -35,36 +36,35 @@ public:
     virtual void SceneUnloading() override;
 
     // override IRenderPass
-    virtual void Animate(const float& deltaTime) override;
-    virtual bool OnKeyboardEvent(const SDL_KeyboardEvent& event) override;
-    virtual bool OnMouseButtonEvent(const SDL_MouseButtonEvent& event) override;
-    virtual bool OnMouseMotionEvent(const SDL_MouseMotionEvent& event) override;
-    virtual bool OnMouseWheelEvent(const SDL_MouseWheelEvent& event) override;
+    virtual void Animate( const float& deltaTime ) override;
+    virtual bool OnKeyboardEvent( const SDL_KeyboardEvent& event ) override;
+    virtual bool OnMouseButtonEvent( const SDL_MouseButtonEvent& event ) override;
+    virtual bool OnMouseMotionEvent( const SDL_MouseMotionEvent& event ) override;
+    virtual bool OnMouseWheelEvent( const SDL_MouseWheelEvent& event ) override;
 
 private:
     typedef SceneRenderer Super;
 
     GraphicsHandle m_Graphics;
     std::string m_CurrentSceneName;
-    std::shared_ptr<Scene> m_Scene;
+    std::shared_ptr< Scene > m_Scene;
 
     // Temp (Shader Factory)
-    std::shared_ptr<Shader> m_Shader = nullptr;
+    std::shared_ptr< Shader > m_Shader = nullptr;
 
     // IView
-    std::unique_ptr<FPSCamera> m_Camera;
-    std::shared_ptr<LoadedTexture> m_Texture;
+    std::unique_ptr< FPSCamera > m_Camera;
+    std::shared_ptr< LoadedTexture > m_Texture;
 
     UIData& m_UI;
 
-    typedef enum {
+    typedef enum
+    {
         SwitchCursorShowHide,
         KeyboardControlCount
     } KeyboardControls;
 
-    const std::map<int, int> keyboardMap = {
-        { SDL_SCANCODE_TAB, KeyboardControls::SwitchCursorShowHide }
-    };
+    const std::map< int, int > keyboardMap = { { SDL_SCANCODE_TAB, KeyboardControls::SwitchCursorShowHide } };
 };
 
 #endif

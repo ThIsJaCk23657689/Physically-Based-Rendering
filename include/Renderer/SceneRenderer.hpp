@@ -9,9 +9,10 @@
 
 class Application;
 class TextureCache;
-class SceneRenderer : public IRenderPass {
+class SceneRenderer : public IRenderPass
+{
 public:
-    SceneRenderer(Application* app);
+    SceneRenderer( Application* app );
 
     virtual bool LoadScene() = 0;
     virtual void RenderScene();
@@ -20,7 +21,7 @@ public:
     virtual void SceneLoaded();
     virtual void SceneUnloading();
 
-    void SetAsynchronousLoadingEnabled(bool enabled);
+    void SetAsynchronousLoadingEnabled( bool enabled );
     bool IsSceneLoading() const;
     bool IsSceneLoaded() const;
 
@@ -33,8 +34,8 @@ protected:
     typedef IRenderPass Super;
 
     bool m_IsAsyncLoad;
-    std::shared_ptr<TextureCache> m_TextureCache;
-    std::unique_ptr<std::thread> m_SceneLoadingThread;
+    std::shared_ptr< TextureCache > m_TextureCache;
+    std::unique_ptr< std::thread > m_SceneLoadingThread;
     // CommonPass
 
 private:

@@ -1,46 +1,42 @@
-BasedOnStyle: Chromium
-Language: Cpp
-Standard: Cpp11
+BasedOnStyle: Google
 
-UseTab: Never
 IndentWidth: 4
+UseTab: Never
 ColumnLimit: 120
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  BeforeElse: true
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
+
+AllowShortBlocksOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortLoopsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: WithoutElse
+
+NamespaceIndentation: None
+IndentAccessModifiers: false
+AccessModifierOffset: -4
+
+SpaceBeforeParens: ControlStatements
+SpacesInParentheses: true
+SpacesInAngles: Always
+SpacesInSquareBrackets: true
 PointerAlignment: Left
 
-AllowShortBlocksOnASingleLine: Never
-AllowShortCaseLabelsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: Inline
-AllowShortIfStatementsOnASingleLine: WithoutElse
-AllowShortLoopsOnASingleLine: false
-AlwaysBreakTemplateDeclarations: Yes
 AlignAfterOpenBracket: Align
-AlignOperands: DontAlign
-AlignTrailingComments: true
+AlignOperands: Align
+AlignTrailingComments:
+  Kind: Always
+AllowAllParametersOfDeclarationOnNextLine: false
 BinPackArguments: false
 BinPackParameters: false
-BreakBeforeBinaryOperators: None
-Cpp11BracedListStyle: false
-IndentCaseLabels: true
-KeepEmptyLinesAtTheStartOfBlocks: false
-NamespaceIndentation: All
-#ForEachMacros: [TEST_CASE, SECTION]
-#PenaltyReturnTypeOnItsOwnLine: 1000
-SpaceAfterTemplateKeyword: false
-SpaceBeforeCpp11BracedList: true
-#DeriveLineEnding: false
-UseCRLF: false
-
-BreakBeforeBraces: Attach
-BreakConstructorInitializers: AfterColon
-
-SpacesInParentheses: false
-SpacesInAngles: Never
-SpaceInEmptyParentheses: false
-SpacesInCStyleCastParentheses: false
-SpaceBeforeAssignmentOperators: true
-ContinuationIndentWidth: 4
-ConstructorInitializerAllOnOneLineOrOnePerLine: true
-ConstructorInitializerIndentWidth: 4
-SpaceBeforeCtorInitializerColon: true
-SpaceBeforeInheritanceColon: true
-AccessModifierOffset: -4

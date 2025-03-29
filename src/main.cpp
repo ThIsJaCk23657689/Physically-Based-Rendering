@@ -1,5 +1,5 @@
-#include <vector>
 #include <memory>
+#include <vector>
 
 #include "App/AppConfig.hpp"
 #include "App/Application.hpp"
@@ -7,8 +7,8 @@
 #include "Renderer/UIRenderer.hpp"
 #include "UIData.hpp"
 
-int main(int argc, char** argv) {
-
+int main( int argc, char** argv )
+{
     AppConfig config;
     config.width = 1280;
     config.height = 720;
@@ -17,19 +17,20 @@ int main(int argc, char** argv) {
     UIData uiData;
 
     auto* app = new Application();
-    if (!app->CreateContextAndWindow(config)) {
+    if ( !app->CreateContextAndWindow( config ) )
+    {
         return -1;
     }
 
     {
-        auto main = std::make_shared<MainRenderer>(app, uiData);
-        auto gui = std::make_shared<UIRenderer>(app, main, uiData);
+        auto main = std::make_shared< MainRenderer >( app, uiData );
+        auto gui = std::make_shared< UIRenderer >( app, main, uiData );
 
         gui->Init();
-        gui->LoadFont("assets/fonts/Fantasque Sans Mono Nerd Font.ttf", 14.0f);
+        gui->LoadFont( "assets/fonts/Fantasque Sans Mono Nerd Font.ttf", 14.0f );
 
-        app->AddRenderPassToBack(main.get());
-        app->AddRenderPassToBack(gui.get());
+        app->AddRenderPassToBack( main.get() );
+        app->AddRenderPassToBack( gui.get() );
         app->RunMainLoop();
     }
 

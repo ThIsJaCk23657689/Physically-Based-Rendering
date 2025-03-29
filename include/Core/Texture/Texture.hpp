@@ -7,12 +7,13 @@
 
 class Graphics;
 
-class Texture : public RefCounter<ITexture> {
+class Texture : public RefCounter< ITexture >
+{
 public:
-    Texture(Graphics* _parent) : parent(_parent), id(0) {}
+    Texture( Graphics* _parent ) : parent( _parent ), id( 0 ) {}
     const TextureDesc& GetDesc() const override { return desc; }
     const unsigned int GetID() const override { return id; }
-    GLObject GetGLObject(GLObjectType objectType) override;
+    GLObject GetGLObject( GLObjectType objectType ) override;
 
     Graphics* parent;
     TextureDesc desc;

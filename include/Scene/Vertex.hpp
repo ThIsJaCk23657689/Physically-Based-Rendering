@@ -2,20 +2,24 @@
 #define VERTEX_HPP
 #include <type_traits>
 
-struct Vertex {
-    struct Position {
+struct Vertex
+{
+    struct Position
+    {
         float x, y, z;
-        float* ptr() { return reinterpret_cast<float*>(this); }
+        float* ptr() { return reinterpret_cast< float* >( this ); }
     };
 
-    struct Normal {
+    struct Normal
+    {
         float x, y, z;
-        float* ptr() { return reinterpret_cast<float*>(this); }
+        float* ptr() { return reinterpret_cast< float* >( this ); }
     };
 
-    struct TexCoord {
+    struct TexCoord
+    {
         float u, v;
-        float* ptr() { return reinterpret_cast<float*>(this); }
+        float* ptr() { return reinterpret_cast< float* >( this ); }
     };
 
     Position position;
@@ -23,8 +27,8 @@ struct Vertex {
     TexCoord texCoord;
 };
 
-static_assert(std::is_standard_layout_v<Vertex>);
-static_assert(std::is_standard_layout_v<Vertex::Position>);
-static_assert(std::is_standard_layout_v<Vertex::Normal>);
-static_assert(std::is_standard_layout_v<Vertex::TexCoord>);
+static_assert( std::is_standard_layout_v< Vertex > );
+static_assert( std::is_standard_layout_v< Vertex::Position > );
+static_assert( std::is_standard_layout_v< Vertex::Normal > );
+static_assert( std::is_standard_layout_v< Vertex::TexCoord > );
 #endif

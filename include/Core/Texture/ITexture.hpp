@@ -4,7 +4,8 @@
 #include "Core/IResource.hpp"
 #include "Core/MemoryManager/RefCountPtr.hpp"
 
-enum class TextureDimension {
+enum class TextureDimension
+{
     Unknown,
     Texture1D,
     Texture1DArray,
@@ -18,7 +19,8 @@ enum class TextureDimension {
     TextureRectangle
 };
 
-struct TextureDesc {
+struct TextureDesc
+{
     std::uint32_t width = 1;
     std::uint32_t height = 1;
     std::uint32_t depth = 1;
@@ -31,11 +33,12 @@ struct TextureDesc {
     const char* debugName = nullptr;
 };
 
-struct ITexture : public IResource {
+struct ITexture : public IResource
+{
     virtual const TextureDesc& GetDesc() const = 0;
     virtual const unsigned int GetID() const = 0;
 };
 
-typedef RefCountPtr<ITexture> TextureHandle;
+typedef RefCountPtr< ITexture > TextureHandle;
 
 #endif

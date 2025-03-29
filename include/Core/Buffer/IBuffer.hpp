@@ -2,22 +2,32 @@
 #define IBUFFER_HPP
 
 #include <cstddef>
+
 #include "Core/IResource.hpp"
 #include "Core/MemoryManager/RefCountPtr.hpp"
 
-struct BufferType {
-    enum Enum {
+struct BufferType
+{
+    enum Enum
+    {
         None = 0,
         VertexBufferObject = 1,
         ElementBufferObject = 2,
     };
 };
 
-struct CpuAccessMode {
-    enum Enum { None, Read, Write };
+struct CpuAccessMode
+{
+    enum Enum
+    {
+        None,
+        Read,
+        Write
+    };
 };
 
-struct BufferDesc {
+struct BufferDesc
+{
     // Buffer Size (Bytes)
     uint32_t byteSize = 0;
 
@@ -32,11 +42,12 @@ struct BufferDesc {
     const char* debugName = nullptr;
 };
 
-class IBuffer : public IResource {
+class IBuffer : public IResource
+{
 public:
     virtual const BufferDesc& GetDesc() const = 0;
-    virtual const unsigned int GetID() const = 0;
+    virtual unsigned int GetID() const = 0;
 };
-typedef RefCountPtr<IBuffer> BufferHandle;
+typedef RefCountPtr< IBuffer > BufferHandle;
 
 #endif
