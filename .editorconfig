@@ -1,0 +1,7 @@
+# EditorConfig configuration file for projects
+root = true
+
+[*.{cpp,hpp,cc,c,h}]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
