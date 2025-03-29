@@ -63,8 +63,12 @@ bool Application::CreateContextAndWindow( const AppConfig& config )
     if ( config.fullScreenEnabled )
     {
         const auto windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_ALLOW_HIGHDPI;
-        m_Window = SDL_CreateWindow(
-            config.title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, windowFlags );
+        m_Window = SDL_CreateWindow(config.title.c_str(),
+                                     SDL_WINDOWPOS_UNDEFINED,
+                                     SDL_WINDOWPOS_UNDEFINED,
+                                     0,
+                                     0,
+                                     windowFlags );
     }
     else
     {
@@ -72,8 +76,8 @@ bool Application::CreateContextAndWindow( const AppConfig& config )
         m_Window = SDL_CreateWindow( config.title.c_str(),
                                      SDL_WINDOWPOS_CENTERED,
                                      SDL_WINDOWPOS_CENTERED,
-                                     config.width,
-                                     config.height,
+                                     ( int ) config.width,
+                                     ( int ) config.height,
                                      windowFlags );
     }
 

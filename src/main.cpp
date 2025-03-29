@@ -1,5 +1,4 @@
 #include <memory>
-#include <vector>
 
 #include "App/AppConfig.hpp"
 #include "App/Application.hpp"
@@ -16,15 +15,15 @@ int main( int argc, char** argv )
 
     UIData uiData;
 
-    auto* app = new Application();
+    auto app = std::make_unique< Application >();
     if ( !app->CreateContextAndWindow( config ) )
     {
         return -1;
     }
 
     {
-        auto main = std::make_shared< MainRenderer >( app, uiData );
-        auto gui = std::make_shared< UIRenderer >( app, main, uiData );
+        auto main = std::make_shared< MainRenderer >( app.get(), uiData );
+        auto gui = std::make_shared< UIRenderer >( app.get(), main, uiData );
 
         gui->Init();
         gui->LoadFont( "assets/fonts/Fantasque Sans Mono Nerd Font.ttf", 14.0f );
@@ -35,7 +34,5 @@ int main( int argc, char** argv )
     }
 
     app->Shutdown();
-    delete app;
-
     return 0;
 }
