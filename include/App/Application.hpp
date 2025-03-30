@@ -1,7 +1,7 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include <list>
 #include <vector>

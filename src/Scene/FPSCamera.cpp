@@ -13,14 +13,14 @@ void FPSCamera::LookAt( glm::vec3 position, glm::vec3 target, glm::vec3 worldUp 
 
 void FPSCamera::OnKeyboardEvent( const SDL_KeyboardEvent& event )
 {
-    const auto scancode = event.keysym.scancode;
+    const auto scancode = event.scancode;
     if ( keyboardMap.find( scancode ) == keyboardMap.end() )
     {
         return;
     }
 
     auto cameraKey = keyboardMap.at( scancode );
-    if ( event.state == SDL_PRESSED || event.repeat != 0 )
+    if ( event.down || event.repeat )
     {
         keyboardState[ cameraKey ] = true;
     }
@@ -39,7 +39,7 @@ void FPSCamera::OnMouseButtonEvent( const SDL_MouseButtonEvent& event )
     }
 
     auto cameraButton = mouseButtonMap.at( button );
-    if ( event.state == SDL_PRESSED )
+    if ( event.down )
     {
         mouseButtonState[ cameraButton ] = true;
     }
@@ -53,14 +53,14 @@ void FPSCamera::OnMouseMotionEvent( const SDL_MouseMotionEvent& event ) {}
 
 void FPSCamera::OnMouseWheelEvent( const SDL_MouseWheelEvent& event ) {}
 
-void FPSCamera::Animate( const float& deltaTime )
+void FPSCamera::Animate( SDL_Window* window, const float deltaTime  )
 {
     // track mouse position
     if ( m_CameraCursorMode )
     {
-        SDL_SetRelativeMouseMode( SDL_TRUE );
+        SDL_SetWindowRelativeMouseMode( window, true );
 
-        int xOffset, yOffset;
+        float xOffset, yOffset;
         SDL_GetRelativeMouseState( &xOffset, &yOffset );
 
         // when switch to Camera mode, we ignore the first relative mouse position to avoid rapidly mouse offset
@@ -73,7 +73,7 @@ void FPSCamera::Animate( const float& deltaTime )
     }
     else
     {
-        SDL_SetRelativeMouseMode( SDL_FALSE );
+        SDL_SetWindowRelativeMouseMode( window, false );
         m_MouseRelPos = { 0, 0 };
         m_MouseInitialized = false;
     }

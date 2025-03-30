@@ -119,16 +119,16 @@ void MainRenderer::SceneUnloading() {}
 
 void MainRenderer::Animate( const float& deltaTime )
 {
-    m_Camera->Animate( deltaTime );
+    m_Camera->Animate( GetApplication()->GetWindow(), deltaTime );
 }
 
 bool MainRenderer::OnKeyboardEvent( const SDL_KeyboardEvent& event )
 {
-    const auto scancode = event.keysym.scancode;
+    const auto scancode = event.scancode;
     if ( keyboardMap.find( scancode ) != keyboardMap.end() )
     {
         auto applicationKey = keyboardMap.at( scancode );
-        if ( event.state == SDL_PRESSED || event.repeat != 0 )
+        if ( event.down || event.repeat )
         {
             m_Camera->SwitchCameraCursorMode();
         }
