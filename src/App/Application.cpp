@@ -21,12 +21,12 @@ bool Application::CreateContextAndWindow( const AppConfig& config )
         if ( ++g_SDLInitCalls == 1 )
         {
             // Initialize SDL2
-            if ( SDL_Init( SDL_INIT_VIDEO ) != 0 )
+            if ( !SDL_Init( SDL_INIT_VIDEO ) )
             {
-                Log::Error( "Oops! Failed to initialize SDL2. :(" );
+                Log::Error( "Oops! Failed to initialize SDL3. :(\nError: SDL_Init(): %s", SDL_GetError() );
                 return false;
             }
-            Log::Info( "Initialize SDL2 successfully." );
+            Log::Info( "Initialize SDL3 successfully." );
         }
     }
 
@@ -62,31 +62,35 @@ bool Application::CreateContextAndWindow( const AppConfig& config )
     // Create window with graphics context
     if ( config.fullScreenEnabled )
     {
-        const auto windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_ALLOW_HIGHDPI;
-        m_Window = SDL_CreateWindow(config.title.c_str(),
-                                     SDL_WINDOWPOS_UNDEFINED,
-                                     SDL_WINDOWPOS_UNDEFINED,
+        const auto windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN | SDL_WINDOW_HIDDEN;
+        m_Window = SDL_CreateWindow( config.title.c_str(),
                                      0,
                                      0,
                                      windowFlags );
     }
     else
     {
-        const auto windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
+        const auto windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN;
         m_Window = SDL_CreateWindow( config.title.c_str(),
-                                     SDL_WINDOWPOS_CENTERED,
-                                     SDL_WINDOWPOS_CENTERED,
                                      ( int ) config.width,
                                      ( int ) config.height,
                                      windowFlags );
     }
-
-    if ( m_Window == nullptr )
+    if ( !m_Window )
     {
-        Log::Error( "Failed to create SDL2 window." );
+        Log::Error( "Failed to create SDL3 window.\n Error SDL_CreateWindow(): %s", SDL_GetError() );
         return false;
     }
-    Log::Info( "Create a SDL2 window successfully." );
+    Log::Info( "Create a SDL3 window successfully." );
+
+    if ( config.fullScreenEnabled )
+    {
+        SDL_SetWindowPosition( m_Window, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED );
+    }
+    else
+    {
+        SDL_SetWindowPosition( m_Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED );
+    }
 
     SDL_SetWindowMinimumSize( m_Window, 400, 300 );
 
@@ -97,11 +101,16 @@ bool Application::CreateContextAndWindow( const AppConfig& config )
 
     // Create GL Context
     m_GLContext = SDL_GL_CreateContext( m_Window );
-    SDL_GL_MakeCurrent( m_Window, m_GLContext );
+    if ( !m_GLContext )
+    {
+        Log::Error( "Failed to create SDL3 window.\nError: SDL_GL_CreateContext(): %s", SDL_GetError() );
+        return false;
+    }
     Log::Info( "Create OpenGL context successfully." );
+    SDL_GL_MakeCurrent( m_Window, m_GLContext );
 
     // Initialize glad
-    if ( !gladLoadGLLoader( SDL_GL_GetProcAddress ) )
+    if ( !gladLoadGLLoader( ( GLADloadproc ) SDL_GL_GetProcAddress ) )
     {
         Log::Error( "Oh No! Failed to initialize glad." );
         return false;
@@ -119,14 +128,14 @@ bool Application::CreateContextAndWindow( const AppConfig& config )
 
     // Enable vsync
     SDL_GL_SetSwapInterval( m_Config.vsyncEnabled );
+    SDL_ShowWindow( m_Window );
 
     // Setting the mouse mode
-    SDL_SetHintWithPriority( SDL_HINT_MOUSE_RELATIVE_MODE_WARP, "1", SDL_HINT_OVERRIDE );
+    // SDL_SetHintWithPriority( SDL_HINT_MOUSE_RELATIVE_MODE_WARP, "1", SDL_HINT_OVERRIDE );
 
     // reset the back buffer size state to enforce resize event
     m_Config.width = 0;
     m_Config.height = 0;
-
     UpdateWindowSize();
 
     return true;
@@ -263,27 +272,29 @@ void Application::ProcessEvents()
 
         switch ( event.type )
         {
-            case SDL_QUIT:
+            case SDL_EVENT_QUIT:
                 OnWindowCloseEvent();
                 break;
-            case SDL_WINDOWEVENT:
+            case SDL_EVENT_WINDOW_RESIZED:
+            case SDL_EVENT_WINDOW_MOVED:
+            case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
                 OnWindowEvent( event.window );
                 break;
-            case SDL_KEYDOWN:
-            case SDL_KEYUP:
+            case SDL_EVENT_KEY_DOWN:
+            case SDL_EVENT_KEY_UP:
                 OnKeyboardEvent( event.key );
                 break;
-            case SDL_TEXTINPUT:
+            case SDL_EVENT_TEXT_INPUT:
                 OnTextInputEvent( event.text );
                 break;
-            case SDL_MOUSEBUTTONDOWN:
-            case SDL_MOUSEBUTTONUP:
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
+            case SDL_EVENT_MOUSE_BUTTON_UP:
                 OnMouseButtonEvent( event.button );
                 break;
-            case SDL_MOUSEMOTION:
+            case SDL_EVENT_MOUSE_MOTION:
                 OnMouseMotionEvent( event.motion );
                 break;
-            case SDL_MOUSEWHEEL:
+            case SDL_EVENT_MOUSE_WHEEL:
                 OnMouseWheelEvent( event.wheel );
                 break;
         }
@@ -297,25 +308,29 @@ void Application::OnWindowCloseEvent()
 
 void Application::OnWindowEvent( const SDL_WindowEvent& event )
 {
-    if ( event.event == SDL_WINDOWEVENT_RESIZED )
+    if ( event.type == SDL_EVENT_WINDOW_RESIZED )
     {
         UpdateWindowSize();
     }
-    if ( event.event == SDL_WINDOWEVENT_CLOSE && event.windowID == SDL_GetWindowID( m_Window ) )
+    else if ( event.type == SDL_EVENT_WINDOW_MOVED )
     {
-        m_ShouldClose = true;
+    }
+    else if ( event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED &&
+              event.windowID == SDL_GetWindowID( m_Window ) )
+    {
+        OnWindowCloseEvent();
     }
 }
 
 void Application::OnKeyboardEvent( const SDL_KeyboardEvent& event )
 {
-    if ( event.keysym.sym == SDLK_UNKNOWN )
+    if ( event.key == SDLK_UNKNOWN )
     {
         return;
     }
 
     // Press ESC key to exit the program (This event's priority is the first one.)
-    if ( event.keysym.sym == SDLK_ESCAPE )
+    if ( event.key == SDLK_ESCAPE )
     {
         m_ShouldClose = true;
     }
@@ -409,7 +424,7 @@ void Application::UpdateWindowSize()
 
 void Application::Shutdown()
 {
-    SDL_GL_DeleteContext( m_GLContext );
+    SDL_GL_DestroyContext( m_GLContext );
 
     if ( m_Window )
     {

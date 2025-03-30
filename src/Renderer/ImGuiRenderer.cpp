@@ -2,7 +2,7 @@
 
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
-#include <imgui_impl_sdl2.h>
+#include <imgui_impl_sdl3.h>
 
 #include "App/Application.hpp"
 
@@ -17,7 +17,7 @@ ImGuiRenderer::~ImGuiRenderer()
 {
     // ui destroy
     ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplSDL2_Shutdown();
+    ImGui_ImplSDL3_Shutdown();
     ImGui::DestroyContext();
 }
 
@@ -25,7 +25,7 @@ bool ImGuiRenderer::Init()
 {
     // ui initialize
     ImGui::StyleColorsDark();
-    ImGui_ImplSDL2_InitForOpenGL( GetApplication()->GetWindow(), GetApplication()->GetContext() );
+    ImGui_ImplSDL3_InitForOpenGL( GetApplication()->GetWindow(), GetApplication()->GetContext() );
     ImGui_ImplOpenGL3_Init();
     return true;
 }
@@ -41,7 +41,7 @@ void ImGuiRenderer::Animate( const float& deltaTime )
 {
     // Start the Dear ImGui Frame
     ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplSDL2_NewFrame();
+    ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
 }
 
@@ -85,7 +85,7 @@ void ImGuiRenderer::EndFullScreenWindow()
 
 bool ImGuiRenderer::ProcessEvent( const SDL_Event& event )
 {
-    return ImGui_ImplSDL2_ProcessEvent( &event );
+    return ImGui_ImplSDL3_ProcessEvent( &event );
 }
 
 bool ImGuiRenderer::OnKeyboardEvent( const SDL_KeyboardEvent& event )

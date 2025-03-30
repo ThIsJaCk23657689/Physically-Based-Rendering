@@ -14,7 +14,7 @@ BaseCamera::BaseCamera()
 {
 }
 
-void BaseCamera::Animate( const float& deltaTime ) {}
+void BaseCamera::Animate( SDL_Window* window, const float deltaTime  ) {}
 
 void BaseCamera::SetMoveSpeed( const float& speed )
 {

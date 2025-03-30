@@ -1,7 +1,7 @@
 #ifndef FPSCAMERA_HPP
 #define FPSCAMERA_HPP
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include <array>
 #include <glm/glm.hpp>
@@ -25,7 +25,7 @@ public:
     void OnMouseButtonEvent( const SDL_MouseButtonEvent& event ) override;
     void OnMouseMotionEvent( const SDL_MouseMotionEvent& event ) override;
     void OnMouseWheelEvent( const SDL_MouseWheelEvent& event ) override;
-    void Animate( const float& deltaTime ) override;
+    void Animate( SDL_Window* window, const float deltaTime ) override;
 
     void SwitchCameraCursorMode();
     void LookAt( glm::vec3 position, glm::vec3 target, glm::vec3 worldUp = { 0.0f, 1.0f, 0.0f } );

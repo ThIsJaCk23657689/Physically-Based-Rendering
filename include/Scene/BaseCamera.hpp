@@ -1,7 +1,7 @@
 #ifndef BASECAMERA_HPP
 #define BASECAMERA_HPP
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include <glm/glm.hpp>
 #include <string>
@@ -13,7 +13,7 @@ public:
     virtual void OnMouseButtonEvent( const SDL_MouseButtonEvent& event ) {}
     virtual void OnMouseMotionEvent( const SDL_MouseMotionEvent& event ) {}
     virtual void OnMouseWheelEvent( const SDL_MouseWheelEvent& event ) {}
-    virtual void Animate( const float& deltaTime );
+    virtual void Animate( SDL_Window* window, const float deltaTime  );
 
     void SetMoveSpeed( const float& speed );
     void SetRotateSpeed( const float& speed );

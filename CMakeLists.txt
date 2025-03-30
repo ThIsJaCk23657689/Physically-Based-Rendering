@@ -44,7 +44,7 @@ message(STATUS "========================================")
 
 # 引入 vcpkg 套件
 find_package(OpenGL REQUIRED)
-find_package(SDL2 REQUIRED)
+find_package(SDL3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(glad REQUIRED)
 find_package(imgui REQUIRED)
@@ -68,7 +68,7 @@ target_sources(${MY_EXECUTABLE} PRIVATE ${MY_SOURCE})
 # 將 vcpkg 的套件（函式庫）連結到【執行檔目標】
 target_link_libraries(${MY_EXECUTABLE} PRIVATE
     OpenGL::GL
-    SDL2::SDL2
+    SDL3::SDL3
     glad::glad
     glm::glm
     imgui::imgui
