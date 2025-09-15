@@ -29,18 +29,18 @@ public:
     void CreateRenderPasses();
 
     // override SceneRenderer
-    virtual void RenderScene() override;
-    virtual void RenderSplashScreen() override;
-    virtual bool LoadScene() override;
-    virtual void SceneLoaded() override;
-    virtual void SceneUnloading() override;
+    void RenderScene() override;
+    void RenderSplashScreen() override;
+    bool LoadScene() override;
+    void SceneLoaded() override;
+    void SceneUnloading() override;
 
     // override IRenderPass
-    virtual void Animate( const float& deltaTime ) override;
-    virtual bool OnKeyboardEvent( const SDL_KeyboardEvent& event ) override;
-    virtual bool OnMouseButtonEvent( const SDL_MouseButtonEvent& event ) override;
-    virtual bool OnMouseMotionEvent( const SDL_MouseMotionEvent& event ) override;
-    virtual bool OnMouseWheelEvent( const SDL_MouseWheelEvent& event ) override;
+    void Animate( const float& deltaTime ) override;
+    bool OnKeyboardEvent( const SDL_KeyboardEvent& event ) override;
+    bool OnMouseButtonEvent( const SDL_MouseButtonEvent& event ) override;
+    bool OnMouseMotionEvent( const SDL_MouseMotionEvent& event ) override;
+    bool OnMouseWheelEvent( const SDL_MouseWheelEvent& event ) override;
 
 private:
     typedef SceneRenderer Super;

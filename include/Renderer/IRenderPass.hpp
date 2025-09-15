@@ -1,5 +1,5 @@
-#ifndef IRENDER_HPP
-#define IRENDER_HPP
+#ifndef IRENDERPASS_HPP
+#define IRENDERPASS_HPP
 
 #include <cstdint>
 
@@ -11,7 +11,8 @@ class Application;
 class IRenderPass
 {
 public:
-    IRenderPass( Application* app ) : m_App( app ) {}
+    explicit IRenderPass( Application* app ) : m_App( app ) {}
+    virtual ~IRenderPass() = default;
 
     virtual void Render() {}
     virtual void Animate( const float& deltaTime ) {}
@@ -26,7 +27,7 @@ public:
     virtual bool OnMouseMotionEvent( const SDL_MouseMotionEvent& event ) { return false; }
     virtual bool OnMouseWheelEvent( const SDL_MouseWheelEvent& event ) { return false; }
 
-    inline Application* GetApplication() { return m_App; }
+    Application* GetApplication() { return m_App; }
 
 private:
     Application* m_App;

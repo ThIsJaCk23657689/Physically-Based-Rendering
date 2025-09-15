@@ -12,7 +12,7 @@ class TextureCache;
 class SceneRenderer : public IRenderPass
 {
 public:
-    SceneRenderer( Application* app );
+    explicit SceneRenderer( Application* app );
 
     virtual bool LoadScene() = 0;
     virtual void RenderScene();
@@ -26,7 +26,7 @@ public:
     bool IsSceneLoaded() const;
 
     // override IRenderPass
-    virtual void Render() override;
+    void Render() override;
 
     // CommonPass
 
