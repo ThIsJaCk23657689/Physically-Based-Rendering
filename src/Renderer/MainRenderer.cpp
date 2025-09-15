@@ -10,6 +10,7 @@
 MainRenderer::MainRenderer( Application* app, UIData& ui ) : Super( app ), m_UI( ui )
 {
     m_Graphics = GetApplication()->GetGraphics();
+    m_Graphics->EnableDepthTest( true );
 
     // Texture: TextureCache
     m_TextureCache = std::make_shared< TextureCache >( m_Graphics );

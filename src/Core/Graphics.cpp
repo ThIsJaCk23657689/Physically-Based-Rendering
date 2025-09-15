@@ -21,6 +21,19 @@ void Graphics::Close()
     // clear state ?
 }
 
+void Graphics::EnableDepthTest( bool enabled )
+{
+    if ( enabled )
+    {
+        glEnable( GL_DEPTH_TEST );
+        glDepthFunc( GL_LESS );
+    }
+    else
+    {
+        glDisable( GL_DEPTH_TEST );
+    }
+}
+
 void Graphics::SetViewport( const int& x, const int& y, const size_t& width, const size_t& height )
 {
     glViewport( x, y, static_cast< GLsizei >( width ), static_cast< GLsizei >( height ) );

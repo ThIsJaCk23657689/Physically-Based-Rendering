@@ -15,6 +15,9 @@
 class IGraphics : public IResource
 {
 public:
+    // global setting
+    virtual void EnableDepthTest( bool enabled ) = 0;
+
     // utility
     virtual void SetViewport( const int& x, const int& y, const size_t& width, const size_t& height ) = 0;
     virtual void ClearCache( const glm::vec4& color ) = 0;
@@ -67,6 +70,8 @@ public:
     void Open();
     void Close();
     IGraphics* GetGraphics() { return this; }
+
+    void EnableDepthTest( bool enabled ) override;
 
     void SetViewport( const int& x, const int& y, const size_t& width, const size_t& height ) override;
     void ClearCache( const glm::vec4& color ) override;
