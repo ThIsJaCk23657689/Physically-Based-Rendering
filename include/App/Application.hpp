@@ -27,7 +27,7 @@ public:
 
     void RunMainLoop();
 
-    [[nodiscard]] SDL_Window* GetWindow() const { return m_Window; }
+    SDL_Window* GetWindow() const { return m_Window; }
     void GetWindowSize( int& width, int& height ) const;
 
     SDL_GLContext GetContext() { return m_GLContext; }
