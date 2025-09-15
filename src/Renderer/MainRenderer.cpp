@@ -90,12 +90,12 @@ void MainRenderer::RenderSplashScreen()
 
 bool MainRenderer::LoadScene()
 {
-    Scene* scene = new Scene();
+    auto scene = std::make_unique< Scene >();
 
     // load ui scene data to create real scene object
     if ( scene->Load( m_UI.project ) )
     {
-        m_Scene = std::unique_ptr< Scene >( scene );
+        m_Scene = std::move( scene );
         return true;
     }
 
