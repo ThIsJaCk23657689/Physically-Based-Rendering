@@ -21,6 +21,12 @@ struct VertexAttribute
     };
 };
 
+enum class MaterialShaderType : unsigned int
+{
+    Lighting = 0,
+    LightCube,
+};
+
 struct BufferGroup
 {
     VertexArrayHandle vertexArray;
@@ -41,6 +47,7 @@ struct Material
     glm::vec3 emissiveColor = glm::vec3( 0.0f );
     float shininess = 0.0f;
     float opacity = 1.0f;
+    bool useTexture = false;
 };
 
 struct MeshInfo
@@ -56,16 +63,16 @@ struct MeshInfo
 struct MeshInstance
 {
     MeshInfo* mesh;
-
-    // Transform 概念
+    glm::mat4 localTransform = glm::mat4( 1.0f );
+    MaterialShaderType shaderType;
 };
 
 class IMeshSet
 {
 public:
-    virtual const std::vector< MeshInfo* >& GetMeshes() const = 0;
-    virtual const std::vector< MeshInstance* >& GetMeshInstances() const = 0;
-    virtual const std::vector< Material* >& GetMaterials() const = 0;
+    [[nodiscard]] virtual const std::vector< Material* >& GetMaterials() const = 0;
+    [[nodiscard]] virtual const std::vector< MeshInfo* >& GetMeshes() const = 0;
+    [[nodiscard]] virtual const std::map< MaterialShaderType, std::vector< MeshInstance* > >& GetMeshInstances() const = 0;
 };
 
 #endif

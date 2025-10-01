@@ -1,4 +1,6 @@
 #include "Scene/Model.hpp"
+#include "Core/Texture/TextureCache.hpp"
+#include "UIData.hpp"
 
 BufferHandle CreateVertexBufferPtr( IGraphics* graphics, const Vertex* data, size_t size, const std::string& debugName )
 {
@@ -86,9 +88,12 @@ Model::Model() : m_AttributeMask( VertexAttribute::ALL ) {}
 
 Model::~Model()
 {
-    for ( auto instance : m_MeshInstances )
+    for ( const auto& kPair : m_MeshInstancesByShaderType )
     {
-        delete instance;
+        for ( auto instance : kPair.second )
+        {
+            delete instance;
+        }
     }
 
     for ( auto mesh : m_Meshes )
@@ -102,12 +107,57 @@ Model::~Model()
     }
 }
 
-void Model::Create( const ModelBasicType& createType )
+void Model::Load( const UI::Prop& uiProp, TextureCache& textureCache )
 {
-    GenerateVertices();
+    m_AttributeMask = VertexAttribute::ALL;
+
+    // Load materials
+    if ( uiProp.material )
+    {
+        LoadMaterials( *uiProp.material, textureCache );
+    }
+
+    // Load vertices and indices
+    const auto& vertices = uiProp.mesh->vertices;
+    const auto& normals = uiProp.mesh->normals;
+    const auto& texCoords = uiProp.mesh->texCoords;
+    const auto& indices = uiProp.mesh->indices;
+    assert( vertices.size() == normals.size() &&
+            vertices.size() == texCoords.size() );
+    PrepareVerticesData( vertices, normals, texCoords );
+    PrepareIndicesData( indices );
+
+    // Materials have already been initialized from json, just copy them to the m_Materials array
+    for ( const auto& it : m_MaterialsByName )
+    {
+        m_Materials.push_back( it.second );
+    }
+
+    // Create mesh and instance for now
+    MeshInfo* mesh = CreateMeshInfo();
+    {
+        mesh->buffers = &m_Buffers;
+        mesh->numIndices = m_Indices.size();
+        mesh->numVertices = m_Vertices.size();
+        mesh->indexOffset = 0;
+        mesh->vertexOffset = 0;
+        mesh->material = m_MaterialsByName[ uiProp.material->name ];
+        m_Meshes.push_back( mesh );
+    }
+
+    for( const auto& transform : m_ObjectInstanceTransforms )
+    {
+        MeshInstance* instance = CreateMeshInstance();
+        instance->mesh = mesh;
+        instance->localTransform = transform;
+        m_MeshInstancesByShaderType[ m_ShaderType ].push_back( instance );
+    }
 }
 
-void Model::AddInstance( const glm::mat4& transform ) {}
+void Model::AddInstance( const glm::mat4& transform )
+{
+    m_ObjectInstanceTransforms.emplace_back(transform );
+}
 
 void Model::CreateRenderingResources( IGraphics* graphics )
 {
@@ -123,75 +173,49 @@ void Model::CreateRenderingResources( IGraphics* graphics )
     // Materials
 }
 
-void Model::GenerateVertices()
+void Model::PrepareVerticesData( const std::vector< glm::vec3 >& vertices,
+                                 const std::vector< glm::vec3 >& normals,
+                                 const std::vector< glm::vec2 >& texCoords )
 {
-    m_Vertices = {
-        { {-0.5, -0.5,  0.5 }, {  0.0, 0.0,  1.0 }, { 0.0, 0.0 } },
-        { { 0.5, -0.5,  0.5 }, {  0.0, 0.0,  1.0 }, { 1.0, 0.0 } },
-        { { 0.5,  0.5,  0.5 }, {  0.0, 0.0,  1.0 }, { 1.0, 1.0 } },
-        { {-0.5,  0.5,  0.5 }, {  0.0, 0.0,  1.0 }, { 0.0, 1.0 } },
-
-        { { 0.5, -0.5,  0.5 }, {  1.0,  0.0,  0.0 }, { 0.0, 0.0 } },
-        { { 0.5, -0.5, -0.5 }, {  1.0,  0.0,  0.0 }, { 1.0, 0.0 } },
-        { { 0.5,  0.5, -0.5 }, {  1.0,  0.0,  0.0 }, { 1.0, 1.0 } },
-        { { 0.5,  0.5,  0.5 }, {  1.0,  0.0,  0.0 }, { 0.0, 1.0 } },
-
-        { { 0.5, -0.5, -0.5 }, {  0.0,  0.0, -1.0 }, { 0.0, 0.0 } },
-        { {-0.5, -0.5, -0.5 }, {  0.0,  0.0, -1.0 }, { 1.0, 0.0 } },
-        { {-0.5,  0.5, -0.5 }, {  0.0,  0.0, -1.0 }, { 1.0, 1.0 } },
-        { { 0.5,  0.5, -0.5 }, {  0.0,  0.0, -1.0 }, { 0.0, 1.0 } },
-
-        { {-0.5, -0.5, -0.5 }, { -1.0,  0.0,  0.0 }, { 0.0, 0.0 } },
-        { {-0.5, -0.5,  0.5 }, { -1.0,  0.0,  0.0 }, { 1.0, 0.0 } },
-        { {-0.5,  0.5,  0.5 }, { -1.0,  0.0,  0.0 }, { 1.0, 1.0 } },
-        { {-0.5,  0.5, -0.5 }, { -1.0,  0.0,  0.0 }, { 0.0, 1.0 } },
-
-        { {-0.5,  0.5,  0.5 }, {  0.0,  1.0,  0.0 }, { 0.0, 0.0 } },
-        { { 0.5,  0.5,  0.5 }, {  0.0,  1.0,  0.0 }, { 1.0, 0.0 } },
-        { { 0.5,  0.5, -0.5 }, {  0.0,  1.0,  0.0 }, { 1.0, 1.0 } },
-        { {-0.5,  0.5, -0.5 }, {  0.0,  1.0,  0.0 }, { 0.0, 1.0 } },
-
-        { { 0.5, -0.5,  0.5 }, {  0.0, -1.0,  0.0 }, { 0.0, 0.0 } },
-        { {-0.5, -0.5,  0.5 }, {  0.0, -1.0,  0.0 }, { 1.0, 0.0 } },
-        { {-0.5, -0.5, -0.5 }, {  0.0, -1.0,  0.0 }, { 1.0, 1.0 } },
-        { { 0.5, -0.5, -0.5 }, {  0.0, -1.0,  0.0 }, { 0.0, 1.0 } },
-    };
-
-    m_Indices = {
-        0, 1, 2,
-        0, 2, 3,
-
-        4, 5, 6,
-        4, 6, 7,
-
-        8, 9, 10,
-        8, 10, 11,
-
-        12, 13, 14,
-        12, 14, 15,
-
-        16, 17, 18,
-        16, 18, 19,
-
-        20, 21, 22,
-        20, 22, 23,
-    };
-
-    m_AttributeMask = VertexAttribute::ALL;
-
-    MeshInfo* mesh = CreateMeshInfo();
+    for ( size_t i = 0; i < vertices.size(); ++i )
     {
-        mesh->buffers = &m_Buffers;
-        mesh->numIndices = m_Indices.size();
-        mesh->numVertices = m_Vertices.size();
-        mesh->indexOffset = 0;
-        mesh->vertexOffset = 0;
-        m_Meshes.push_back( mesh );
+        Vertex vertex = {};
+        vertex.position = vertices[ i ];
+        vertex.normal = normals[ i ];
+        vertex.texCoord = texCoords[ i ];
+        m_Vertices.push_back( vertex );
     }
+}
 
-    MeshInstance* instance = CreateMeshInstance();
-    instance->mesh = mesh;
-    m_MeshInstances.push_back( instance );
+void Model::PrepareIndicesData( const std::vector< uint32_t >& indices )
+{
+    m_Indices = indices;
+}
+
+void Model::LoadMaterials( const UI::Material& uiMaterial, TextureCache& textureCache )
+{
+    Material* material = CreateMaterial();
+    const auto& strMaterialName = uiMaterial.name;
+    m_MaterialsByName[ strMaterialName ] = material;
+
+    material->name = strMaterialName;
+    material->diffuseColor = uiMaterial.color;
+
+    auto fnLoadTexture = [ this, &textureCache ]( const std::string& path, bool sRGB )
+    {
+        if ( path.empty() )
+        {
+            assert( 0 && "Texture path is empty" );
+            return std::make_shared< LoadedTexture >();
+        }
+        return textureCache.LoadTextureFromFile( path, sRGB );
+    };
+
+    if ( uiMaterial.bUseTexture )
+    {
+        material->useTexture = true;
+        material->diffuseTexture = fnLoadTexture( uiMaterial.texturePath, false );
+    }
 }
 
 MeshInfo* Model::CreateMeshInfo()

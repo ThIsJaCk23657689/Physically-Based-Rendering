@@ -52,9 +52,9 @@ public:
 
 protected:
     bool FindTextureInCache( const std::filesystem::path& path, std::shared_ptr< TextureData >& texture );
-    bool FillTextureData( const std::filesystem::path& path, std::shared_ptr< TextureData >& texture );
-    void FinalizeTexture( std::shared_ptr< TextureData > texture );
-    void SendTextureLoadedMessage( std::shared_ptr< TextureData > texture );
+    static bool FillTextureData( const std::filesystem::path& path, std::shared_ptr< TextureData >& texture );
+    void FinalizeTexture( const std::shared_ptr< TextureData >& texture );
+    static void SendTextureLoadedMessage( const std::shared_ptr< TextureData >& texture );
 
     GraphicsHandle m_Graphics;
     std::mutex m_LoadedTexturesMutex;

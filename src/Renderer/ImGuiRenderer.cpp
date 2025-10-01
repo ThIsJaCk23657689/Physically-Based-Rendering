@@ -63,8 +63,7 @@ void ImGuiRenderer::BeginFullScreenWindow()
     ImGui::SetNextWindowSize( ImVec2( float( width ), float( height ) ), ImGuiCond_Always );
     ImGui::PushStyleVar( ImGuiStyleVar_WindowBorderSize, 0.0f );
     ImGui::SetNextWindowBgAlpha( 0.0f );
-    ImGui::Begin(
-        "Loading Screen", 0, ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar );
+    ImGui::Begin( "Loading Screen", 0, ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar );
 }
 
 void ImGuiRenderer::DrawScreenCenteredText( const char* text )

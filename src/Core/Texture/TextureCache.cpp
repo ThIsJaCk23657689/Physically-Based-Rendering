@@ -137,12 +137,15 @@ bool TextureCache::FillTextureData( const std::filesystem::path& path, std::shar
     texture->mipLevels = 1;
     texture->dimension = TextureDimension::Texture2D;
     texture->data = std::make_shared< StbImageBlob >( bitmap );
-    bitmap = nullptr;
-
+    if ( !texture->data->data() )
+    {
+        Log::Error( "Failed to load image: %s", path.generic_string().c_str() );
+        return false;
+    }
     return true;
 }
 
-void TextureCache::FinalizeTexture( std::shared_ptr< TextureData > texture )
+void TextureCache::FinalizeTexture( const std::shared_ptr< TextureData >& texture )
 {
     assert( texture->data );
 
@@ -159,7 +162,7 @@ void TextureCache::FinalizeTexture( std::shared_ptr< TextureData > texture )
     texture->texture = m_Graphics->CreateTexture( textureDesc, dataPointer );
 }
 
-void TextureCache::SendTextureLoadedMessage( std::shared_ptr< TextureData > texture )
+void TextureCache::SendTextureLoadedMessage( const std::shared_ptr< TextureData >& texture )
 {
     Log::Info( "Loaded %d x %d: %s", texture->width, texture->height, texture->relativePath.c_str() );
 }

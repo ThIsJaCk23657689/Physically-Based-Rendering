@@ -39,6 +39,7 @@ void UIRenderer::BuildUI()
                 ImGui::Text( "SceneRenderer average %.3f ms/frame (%.1 FPS)",
                              1000.0f / ImGui::GetIO().Framerate,
                              ImGui::GetIO().Framerate );
+                ImGui::ColorEdit3( "Background Color", ( float* )&m_UI.clearColor );
                 ImGui::EndTabItem();
             }
             if ( ImGui::BeginTabItem( "Camera" ) )

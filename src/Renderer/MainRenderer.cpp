@@ -16,7 +16,8 @@ MainRenderer::MainRenderer( Application* app, UIData& ui ) : Super( app ), m_UI(
     m_TextureCache = std::make_shared< TextureCache >( m_Graphics );
 
     // Shaders: ShaderFactory
-    m_Shader = std::make_shared< Shader >( "assets/shaders/basic.vert", "assets/shaders/basic.frag" );
+    m_LightingShader = std::make_shared< Shader >( "assets/shaders/basic.vert", "assets/shaders/lighting.frag" );
+    m_LightCubeShader = std::make_shared< Shader >( "assets/shaders/basic.vert", "assets/shaders/lightcube.frag" );
 
     // CommonPasses
 
@@ -26,11 +27,11 @@ MainRenderer::MainRenderer( Application* app, UIData& ui ) : Super( app ), m_UI(
     m_Camera->SetMoveSpeed( 1.0f );
 
     // Loaded Scene
-    SetAsynchronousLoadingEnabled( true );
+    SetAsynchronousLoadingEnabled( false );
     SetCurrentScene( "The World of Rick Roll" );
 
     // Load EnvironmentMap
-    m_Texture = m_TextureCache->LoadTextureFromFile( "assets/textures/rickroll.jpg", false );
+    // m_Texture = m_TextureCache->LoadTextureFromFile( "assets/textures/rickroll.jpg", false );
     // m_TextureCache->LoadTextureFromFileDeferred("assets/textures/rickroll.jpg", false);
 }
 
@@ -56,30 +57,70 @@ void MainRenderer::RenderScene()
 {
     int windowWidth, windowHeight;
     GetApplication()->GetWindowSize( windowWidth, windowHeight );
-    float aspect = windowWidth / static_cast< float >( windowHeight );
+    float aspect = static_cast< float >( windowWidth ) / static_cast< float >( windowHeight );
 
     m_Graphics->SetViewport( 0, 0, windowWidth, windowHeight );
     m_Graphics->ClearCache( m_UI.clearColor );
 
-    m_Shader->Start();
-    m_Shader->SetInt( "MySampler", 0 );
-
-    auto model = glm::mat4( 1.0f );
     auto view = m_Camera->GetWorldToViewMatrix();
     auto projection = glm::perspective( glm::radians( m_Camera->m_VerticalFov ), aspect, 0.1f, 1000.0f );
 
-    m_Shader->SetMat4( "Model", model );
-    m_Shader->SetMat4( "View", view );
-    m_Shader->SetMat4( "Projection", projection );
-
-    // Temp
-    const auto& instances = m_Scene->GetMeshInstances();
-    for ( const auto& instance : instances )
+    for ( const auto& kPair : m_Scene->GetMeshInstances() )
     {
-        const auto& vao = instance->mesh->buffers->vertexArray;
-        const auto& indexCount = instance->mesh->numIndices;
+        const auto& shaderType = kPair.first;
+        if ( shaderType == MaterialShaderType::LightCube )
+        {
+            m_LightCubeShader->Start();
+            m_LightCubeShader->SetMat4( "View", view );
+            m_LightCubeShader->SetMat4( "Projection", projection );
 
-        m_Graphics->DrawIndexed( vao, m_Texture->texture, indexCount );
+            // TODO: 把 LightColor 移除掉，這裡應該直接填 Light Prop Color
+            m_LightCubeShader->SetVec3( "LightColor", { 1.0f, 1.0f, 1.0f } );
+
+            for ( const auto& instance : kPair.second )
+            {
+                auto model = instance->localTransform;
+                m_LightCubeShader->SetMat4( "Model", model );
+
+                const auto& vao = instance->mesh->buffers->vertexArray;
+                const auto& indexCount = instance->mesh->numIndices;
+                if ( instance->mesh->material->useTexture )
+                {
+                    m_Graphics->DrawIndexed( vao, instance->mesh->material->diffuseTexture->texture, indexCount );
+                }
+                else
+                {
+                    m_Graphics->DrawIndexed( vao, nullptr, indexCount );
+                }
+            }
+        }
+        else if ( shaderType == MaterialShaderType::Lighting )
+        {
+            m_LightingShader->Start();
+            m_LightingShader->SetMat4( "View", view );
+            m_LightingShader->SetMat4( "Projection", projection );
+
+            m_LightingShader->SetVec3( "LightColor", { 1.0f, 1.0f, 1.0f } );
+
+            for ( const auto& instance : kPair.second )
+            {
+                auto model = instance->localTransform;
+                m_LightingShader->SetMat4( "Model", model );
+
+                const auto& vao = instance->mesh->buffers->vertexArray;
+                const auto& indexCount = instance->mesh->numIndices;
+                if ( instance->mesh->material->useTexture )
+                {
+                    m_LightingShader->SetInt( "MySampler", 0 );
+                    m_Graphics->DrawIndexed( vao, instance->mesh->material->diffuseTexture->texture, indexCount );
+                }
+                else
+                {
+                    // TODO: 應該要支援純色 Shader
+                    m_Graphics->DrawIndexed( vao, nullptr, indexCount );
+                }
+            }
+        }
     }
 }
 
@@ -93,7 +134,7 @@ bool MainRenderer::LoadScene()
     auto scene = std::make_unique< Scene >();
 
     // load ui scene data to create real scene object
-    if ( scene->Load( m_UI.project ) )
+    if ( scene->Load( m_UI.project, *m_TextureCache ) )
     {
         m_Scene = std::move( scene );
         return true;

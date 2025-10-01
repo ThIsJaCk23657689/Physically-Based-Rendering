@@ -50,7 +50,8 @@ private:
     std::shared_ptr< Scene > m_Scene;
 
     // Temp (Shader Factory)
-    std::shared_ptr< Shader > m_Shader = nullptr;
+    std::shared_ptr< Shader > m_LightingShader = nullptr;
+    std::shared_ptr< Shader > m_LightCubeShader = nullptr;
 
     // IView
     std::unique_ptr< FPSCamera > m_Camera;

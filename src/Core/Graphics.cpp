@@ -59,7 +59,7 @@ void Graphics::Draw( IVertexArray* vao, ITexture* texture, const size_t& vertexC
 void Graphics::DrawIndexed( IVertexArray* vao, ITexture* texture, const size_t& indexCount )
 {
     glBindVertexArray( vao->GetID() );
-    glBindTextureUnit( 0, texture->GetID() );
+    glBindTextureUnit( 0, texture ? texture->GetID() : 0 );
 
     // glActiveTexture(GL_TEXTURE0);
     // glBindTexture(GL_TEXTURE_2D, m_Texture);
